@@ -1,0 +1,6 @@
+[submodule "Assets/LeopotamGroup/Ecs"]
+	path = Assets/LeopotamGroup/Ecs
+	url = git://github.com/Leopotam/ecs.git
+[submodule "Assets/LeopotamGroup/Ecs.UnityIntegration"]
+	path = Assets/LeopotamGroup/Ecs.UnityIntegration
+	url = git://github.com/Leopotam/ecs-unityintegration.git

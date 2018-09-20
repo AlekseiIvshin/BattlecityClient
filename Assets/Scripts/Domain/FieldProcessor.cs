@@ -1,30 +1,56 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Leopotam.Ecs;
 
-public abstract class FieldProcessor<T>
+public abstract class FieldProcessor<T>: FieldHandler where T : BaseEntity, new()
 {
-    private List<T> accumulator;
+    protected EcsWorld _world;
+    protected EcsFilter<T> _filter;
+    protected int _fieldSize;
 
-    public FieldProcessor()
+    public FieldProcessor(EcsWorld world, EcsFilter<T> filter)
     {
-        this.accumulator = new List<T>();
+        this._world = world;
+        this._filter = filter;
     }
 
-    protected abstract bool canProcess(char symbol);
-    protected abstract T getFieldValue(char[][] field, int row, int column);
+    public abstract void onFieldUpdates(char[][] prev, char[][] next, int row, int column);
+    public abstract bool canProcess(char symbol);
+    protected abstract T createItem(char symbol, int row, int column);
+    protected abstract void removeItem(int row, int column);
 
-    public void process(char[][] field, int row, int column)
+    public T findByPosition(int row, int column)
     {
-        if (canProcess(field[row][column]))
+        T item = null;
+        for (var entityId = 0; entityId < _filter.EntitiesCount; entityId++)
         {
-            accumulator.Add(getFieldValue(field, row, column));
+            item = _filter.Components1[entityId];
+            if (item.row == row && item.column == column)
+            {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public void initItem(char symbol, int row, int column)
+    {
+        if (canProcess(symbol))
+        {
+            createItem(symbol, row, column);
         }
     }
 
-    public List<T> getItems()
+    public void setFieldSize(int fieldSize)
     {
-        return accumulator;
+        this._fieldSize = fieldSize;
     }
 
+    protected T createOrGetComponent(GameObject unityObject, out int entityId)
+    {
+        var entity=SystemUtils.getComponent<T>(_world, unityObject, out entityId);
+        entity.entityId = entityId;
+        return entity;
+    }
 }

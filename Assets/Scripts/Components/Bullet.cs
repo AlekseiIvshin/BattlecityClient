@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bullet
+public class Bullet : BaseEntity
 {
-    public int entityId;
-    public int direction;
-    public int row;
-    public int column;
+    public Transform transform;
 }

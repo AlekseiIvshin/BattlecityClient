@@ -1,13 +1,12 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-public class Tank
+public class Tank: BaseEntity
 { 
-    public int entityId;
     public int direction;
-    public int row;
-    public int column;
     public string name;
     public float rotationSpeed;
     public Transform transform;
     public CharacterController characterController;
+    public List<TankDelta> deltas = new List<TankDelta>();
 }

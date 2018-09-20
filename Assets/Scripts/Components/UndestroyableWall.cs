@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UndestroyableWall {
-    public int row;
-    public int column;
+public class UndestroyableWall : BaseEntity
+{
 }

@@ -1,9 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+using Leopotam.Ecs;
+using System.Text;
 
 public class WallProcessor : FieldProcessor<Wall>
 {
+    public const int NOT_DESTROYED = 0;
+    public const int DESTROYED_UP = 1;
+    public const int DESTROYED_CENTER_VERT = 1 << 1;
+    public const int DESTROYED_CENTER_HOR = 1 << 2;
+    public const int DESTROYED_DOWN = 1 << 3;
+    public const int DESTROYED_LEFT = 1 << 4;
+    public const int DESTROYED_RIGHT = 1 << 5;
 
     private const string wallSymbols = "╬╩╦╠╣╨╥╞╡│─┌┐└┘";
     const char CONSTRUCTION = '╬';
@@ -22,133 +32,155 @@ public class WallProcessor : FieldProcessor<Wall>
     const char CONSTRUCTION_DESTROYED_DOWN_LEFT = '└';
     const char CONSTRUCTION_DESTROYED_DOWN_RIGHT = '┘';
 
+    public WallProcessor(EcsWorld world, EcsFilter<Wall> filter) : base(world, filter)
+    {
+    }
+
     public static bool isWall(char symbol)
     {
         return wallSymbols.IndexOf(symbol) >= 0;
     }
 
-    protected override bool canProcess(char symbol)
+    public override bool canProcess(char symbol)
     {
         return wallSymbols.IndexOf(symbol) >= 0;
     }
 
-    protected override Wall getFieldValue(char[][] field, int row, int column)
+    private static bool[][] getDamages(int destroyed)
     {
-        var hp = 0;
-        int damaged = Wall.NOT_DESTROYED;
+        var destroyedLeft = (destroyed & DESTROYED_LEFT) > 0;
+        var destroyedRight = (destroyed & DESTROYED_RIGHT) > 0;
+        var destroyedDown = (destroyed & DESTROYED_DOWN) > 0;
+        var destroyedUp = (destroyed & DESTROYED_UP) > 0;
+        var destroyedCenterVert = (destroyed & DESTROYED_CENTER_VERT) > 0;
+        var destroyedCenterHor = (destroyed & DESTROYED_CENTER_HOR) > 0;
+        return new[] {
+            new[] { destroyedLeft || destroyedUp, destroyedUp || destroyedCenterVert, destroyedUp || destroyedRight },
+            new[] { destroyedLeft || destroyedCenterHor, destroyedCenterHor || destroyedCenterVert, destroyedRight || destroyedCenterHor },
+            new[] { destroyedLeft || destroyedDown, destroyedDown || destroyedCenterVert, destroyedDown || destroyedRight }
+        };
+    }
+
+    private static void printDamages(bool[][] damages, string tag)
+    {
+        Debug.Log("Print damages: " + tag);
+        for (var i = 0; i < 3; i++)
+        {
+            var builder = new StringBuilder();
+            for (var j = 0; j < 3; j++)
+            {
+                builder.Append((damages[i][j] ? 1 : 0) + " ");
+            }
+            Debug.Log(builder.ToString());
+        }
+    }
+
+    public override void onFieldUpdates(char[][] prev, char[][] next, int row, int column)
+    {
+        if (!isWall(prev[row][column]))
+        {
+            return;
+        }
+        var wall = findByPosition(row, column);
+        if (wall == null)
+        {
+            return;
+        }
+        var nextState = getFieldValue(next, row, column);
+        var prevDamages = getDamages(wall.destroyed);
+        var nextDamages = getDamages(nextState.destroyed);
+        for (var i = 0; i < 3; i++)
+        {
+            for (var j = 0; j < 3; j++)
+            {
+                if (!prevDamages[i][j] && nextDamages[i][j])
+                {
+                    var wallPart = wall.transform.Find(i + "." + j);
+                    if (wallPart != null)
+                    {
+                        wallPart.transform.position = new Vector3(wallPart.transform.position.x, -2, wallPart.transform.position.z);
+                    }
+                }
+            }
+        }
+    }
+
+    protected override Wall createItem(char symbol, int row, int column)
+    {
+        int entityId;
+        var unityObject = Object.Instantiate(
+            AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Wall.prefab", typeof(GameObject)),
+            MapUtils.getWorldPosition(_fieldSize, row, column),
+            Quaternion.Euler(0, 0, 0)
+        ) as GameObject;
+        Wall wall = createOrGetComponent(unityObject, out entityId); ;
+        wall.column = column;
+        wall.row = row;
+        wall.transform = unityObject.transform;
+        return wall;
+    }
+
+    protected override void removeItem(int row, int column)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected Wall getFieldValue(char[][] field, int row, int column)
+    {
+        int damaged = NOT_DESTROYED;
         switch (field[row][column])
         {
             case CONSTRUCTION:
-                {
-                    hp = 3;
-                    damaged = 0;
-                    break;
-                }
+                damaged = 0;
+                break;
             case CONSTRUCTION_DESTROYED_DOWN:
-                {
-                    hp = 2;
-                    damaged = Wall.DESTROYED_DOWN;
-                    break;
-                }
+                damaged = DESTROYED_DOWN;
+                break;
             case CONSTRUCTION_DESTROYED_UP:
-                {
-                    hp = 2;
-                    damaged = Wall.DESTROYED_UP;
-                    break;
-                }
+                damaged = DESTROYED_UP;
+                break;
             case CONSTRUCTION_DESTROYED_LEFT:
-                {
-                    hp = 2;
-                    damaged = Wall.DESTROYED_LEFT;
-                    break;
-                }
+                damaged = DESTROYED_LEFT;
+                break;
             case CONSTRUCTION_DESTROYED_RIGHT:
-                {
-                    hp = 2;
-                    damaged = Wall.DESTROYED_RIGHT;
-                    break;
-                }
+                damaged = DESTROYED_RIGHT;
+                break;
             case CONSTRUCTION_DESTROYED_DOWN_TWICE:
-                {
-                    hp = 1;
-                    damaged = Wall.DESTROYED_DOWN | Wall.DESTROYED_CENTER;
-                    break;
-                }
+                damaged = DESTROYED_DOWN | DESTROYED_CENTER_HOR;
+                break;
             case CONSTRUCTION_DESTROYED_UP_TWICE:
-                {
-                    hp = 1;
-                    damaged = Wall.DESTROYED_UP | Wall.DESTROYED_CENTER;
-                    break;
-                }
+                damaged = DESTROYED_UP | DESTROYED_CENTER_HOR;
+                break;
             case CONSTRUCTION_DESTROYED_LEFT_TWICE:
-                {
-                    hp = 1;
-                    damaged = Wall.DESTROYED_LEFT | Wall.DESTROYED_CENTER;
-                    break;
-                }
+                damaged = DESTROYED_LEFT | DESTROYED_CENTER_VERT;
+                break;
             case CONSTRUCTION_DESTROYED_RIGHT_TWICE:
-                {
-                    hp = 1;
-                    damaged = Wall.DESTROYED_RIGHT | Wall.DESTROYED_CENTER;
-                    break;
-                }
+                damaged = DESTROYED_RIGHT | DESTROYED_CENTER_VERT;
+                break;
             case CONSTRUCTION_DESTROYED_LEFT_RIGHT:
-                {
-                    hp = 1;
-                    damaged = Wall.DESTROYED_RIGHT | Wall.DESTROYED_LEFT;
-                    break;
-                }
+                damaged = DESTROYED_RIGHT | DESTROYED_LEFT;
+                break;
             case CONSTRUCTION_DESTROYED_UP_DOWN:
-                {
-                    hp = 1;
-                    damaged = Wall.DESTROYED_UP | Wall.DESTROYED_DOWN;
-                    break;
-                }
+                damaged = DESTROYED_UP | DESTROYED_DOWN;
+                break;
             case CONSTRUCTION_DESTROYED_UP_LEFT:
-                {
-                    hp = 1;
-                    damaged = Wall.DESTROYED_UP | Wall.DESTROYED_CENTER | Wall.DESTROYED_LEFT;
-                    break;
-                }
+                damaged = DESTROYED_UP | DESTROYED_CENTER_VERT | DESTROYED_CENTER_HOR | DESTROYED_LEFT;
+                break;
             case CONSTRUCTION_DESTROYED_RIGHT_UP:
-                {
-                    hp = 1;
-                    damaged = Wall.DESTROYED_UP | Wall.DESTROYED_CENTER | Wall.DESTROYED_RIGHT;
-                    break;
-                }
+                damaged = DESTROYED_UP | DESTROYED_CENTER_VERT | DESTROYED_CENTER_HOR | DESTROYED_RIGHT;
+                break;
             case CONSTRUCTION_DESTROYED_DOWN_LEFT:
-                {
-                    hp = 1;
-                    damaged = Wall.DESTROYED_DOWN | Wall.DESTROYED_CENTER | Wall.DESTROYED_LEFT;
-                    break;
-                }
+                damaged = DESTROYED_DOWN | DESTROYED_CENTER_VERT | DESTROYED_CENTER_HOR | DESTROYED_LEFT;
+                break;
             case CONSTRUCTION_DESTROYED_DOWN_RIGHT:
-                {
-                    hp = 1;
-                    damaged = Wall.DESTROYED_DOWN | Wall.DESTROYED_CENTER | Wall.DESTROYED_RIGHT;
-                    break;
-                }
+                damaged = DESTROYED_DOWN | DESTROYED_CENTER_VERT | DESTROYED_CENTER_HOR | DESTROYED_RIGHT;
+                break;
         }
         return new Wall
         {
             destroyed = damaged,
-            hp = hp,
             row = row,
             column = column
-        };
-    }
-
-    private static bool[][] getDamages(int destroyed)
-    {
-        var destroyedLeft = (destroyed & Wall.DESTROYED_LEFT) > 0;
-        var destroyedRight = (destroyed & Wall.DESTROYED_RIGHT) > 0;
-        var destroyedDown = (destroyed & Wall.DESTROYED_LEFT) > 0;
-        var destroyedUp = (destroyed & Wall.DESTROYED_UP) > 0;
-        var destroyedCenter = (destroyed & Wall.DESTROYED_DOWN) > 0;
-        return new[] {
-            new[] { destroyedLeft || destroyedUp, destroyedUp || destroyedCenter, destroyedUp || destroyedRight },
-            new[] { destroyedLeft || destroyedCenter, destroyedCenter, destroyedRight || destroyedCenter },
-            new[] { destroyedLeft || destroyedDown, destroyedDown || destroyedCenter, destroyedRight || destroyedRight }
         };
     }
 }

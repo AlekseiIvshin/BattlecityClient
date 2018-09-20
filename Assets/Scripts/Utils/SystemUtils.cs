@@ -13,8 +13,8 @@ public class SystemUtils
             return world.AddComponent<T>(entityId);
         }
         T component;
-        var newEntityId = world.CreateEntityWith<T>(out component);
-        entityMetaHolder.setEntityId(newEntityId);
+        entityId = world.CreateEntityWith<T>(out component);
+        entityMetaHolder.setEntityId(entityId);
         return component;
     }
 }

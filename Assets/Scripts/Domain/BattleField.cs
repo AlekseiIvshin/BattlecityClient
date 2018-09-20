@@ -10,18 +10,18 @@ public class BattleField
 
     /*01234                           
     0 ☼☼☼☼☼                           
-    1 ☼╬•˅☼                           
+    1 ☼╬↧˅☼                           
     2 ☼ ˂╬☼                           
-    3 ☼ ╬╬☼                           
+    3 ☼  ╬☼                           
     4 ☼☼☼☼☼ */
-    public const string SAMPLE_SMALL = "☼☼☼☼☼☼╬•˅☼☼ ˂╬☼☼ ╬╬☼☼☼☼☼☼";
+    public const string SAMPLE_SMALL = "☼☼☼☼☼☼╬↧˅☼☼ ˂╬☼☼  ╬☼☼☼☼☼☼";
     /*01234                           
     0 ☼☼☼☼☼                           
-    1 ☼╨•˅☼                           
-    2 ☼˅ ╬☼                           
-    3 ☼ ╬╬☼                           
+    1 ☼╨ ˅☼                           
+    2 ☼ ˂╬☼                           
+    3 ☼ ↧╬☼                           
     4 ☼☼☼☼☼ */
-    public const string SAMPLE_SMALL_1 = "☼☼☼☼☼☼╨•˅☼☼˅ ╬☼☼ ╬╬☼☼☼☼☼☼";
+    public const string SAMPLE_SMALL_1 = "☼☼☼☼☼☼╨ ˅☼☼ ˂╬☼☼ ↧╬☼☼☼☼☼☼";
 
     private char[] field;
 

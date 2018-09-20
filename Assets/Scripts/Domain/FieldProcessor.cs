@@ -15,6 +15,19 @@ public abstract class FieldProcessor<T>: FieldHandler where T : BaseEntity, new(
         this._filter = filter;
     }
 
+    public static PositionDelta calculatePositionDelta(int direction, int step)
+    {
+        switch(direction)
+        {
+            case MapUtils.DIRECTION_UP:return new PositionDelta { rowDelta = -step, columnDelta = 0 };
+            case MapUtils.DIRECTION_DOWN: return new PositionDelta { rowDelta = step, columnDelta = 0 };
+            case MapUtils.DIRECTION_LEFT: return new PositionDelta { rowDelta = 0, columnDelta = -step };
+            case MapUtils.DIRECTION_RIGHT: return new PositionDelta { rowDelta = 0, columnDelta = step };
+            case MapUtils.DIRECTION_UNKNOWN:
+            default: return new PositionDelta { rowDelta = 0, columnDelta = 0 };
+        }
+    }
+
     public abstract void onFieldUpdates(char[][] prev, char[][] next, int row, int column);
     public abstract bool canProcess(char symbol);
     protected abstract T createItem(char symbol, int row, int column);

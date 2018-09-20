@@ -6,19 +6,14 @@ using UnityEngine;
 
 public class TankProcessor : FieldProcessor<Tank>
 {
-    const char TANK_UP = '▲';
-    const char TANK_RIGHT = '►';
-    const char TANK_DOWN = '▼';
-    const char TANK_LEFT = '◄';
-
-    const string tankSymbols = "▲►▼◄";
-
-    const char OTHER_TANK_UP = '˄';
-    const char OTHER_TANK_RIGHT = '˃';
-    const char OTHER_TANK_DOWN = '˅';
-    const char OTHER_TANK_LEFT = '˂';
-
-    const string otherRankSymbols = "˄˃˅˂";
+    private static string tankSymbols =""+ FieldItems.TANK_UP +
+            FieldItems.OTHER_TANK_UP +
+            FieldItems.TANK_DOWN +
+            FieldItems.OTHER_TANK_DOWN +
+            FieldItems.TANK_LEFT +
+            FieldItems.OTHER_TANK_LEFT +
+            FieldItems.TANK_RIGHT +
+            FieldItems.OTHER_TANK_RIGHT;
 
     const char DEAD_TANK = 'Ѡ';
 
@@ -28,7 +23,7 @@ public class TankProcessor : FieldProcessor<Tank>
 
     public static bool isTank(char symbol)
     {
-        return tankSymbols.IndexOf(symbol) >= 0 || otherRankSymbols.IndexOf(symbol) >= 0;
+        return tankSymbols.IndexOf(symbol) >= 0;
     }
 
     public static bool isDesctroyedTank(char symbol)
@@ -40,21 +35,20 @@ public class TankProcessor : FieldProcessor<Tank>
     {
         switch (symbol)
         {
-            case TANK_UP:
-            case OTHER_TANK_UP:
+            case FieldItems.TANK_UP:
+            case FieldItems.OTHER_TANK_UP:
                 return MapUtils.DIRECTION_UP;
-            case TANK_DOWN:
-            case OTHER_TANK_DOWN:
+            case FieldItems.TANK_DOWN:
+            case FieldItems.OTHER_TANK_DOWN:
                 return MapUtils.DIRECTION_DOWN;
-            case TANK_LEFT:
-            case OTHER_TANK_LEFT:
+            case FieldItems.TANK_LEFT:
+            case FieldItems.OTHER_TANK_LEFT:
                 return MapUtils.DIRECTION_LEFT;
-            case TANK_RIGHT:
-            case OTHER_TANK_RIGHT:
+            case FieldItems.TANK_RIGHT:
+            case FieldItems.OTHER_TANK_RIGHT:
                 return MapUtils.DIRECTION_RIGHT;
         }
-        return MapUtils.DIRECTION_DOWN;
-        // throw new System.Exception("No direction for '" + symbol + "'");
+        throw new System.Exception("No direction for '" + symbol + "'");
     }
 
     private static int getDirectionForMovement(int rowDelta, int columnDelta, int defaultValue)
@@ -143,8 +137,12 @@ public class TankProcessor : FieldProcessor<Tank>
     {
         int entityId;
         int direction = getDirection(symbol);
-        GameObject unityObject = Object.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Tank.prefab", typeof(GameObject)), MapUtils.getWorldPosition(_fieldSize, row, column), MapUtils.getWorlRotation(direction)) as GameObject;
+        GameObject unityObject = Object.Instantiate(
+            AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Tank.prefab", typeof(GameObject)), 
+            MapUtils.getWorldPosition(_fieldSize, row, column), 
+            MapUtils.getWorlRotation(direction)) as GameObject;
         Tank tank = createOrGetComponent(unityObject, out entityId);
+        tank.entityId = entityId;
         tank.direction = direction;
         tank.column = column;
         tank.row = row;

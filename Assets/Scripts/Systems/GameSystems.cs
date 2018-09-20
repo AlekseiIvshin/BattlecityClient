@@ -7,7 +7,6 @@ using UnityEngine;
 [EcsInject]
 public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.Handler
 {
-    private static char WITHOUT_CHANGES = '#';
     private static int GAME_WAIT_FOR_DATA = 0;
     private static int GAME_STARTED = 1;
 
@@ -50,8 +49,8 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
     {
         if (!wasUpdated)
         {
-            handleUpdates(BattleField.SAMPLE_SMALL_1);
             wasUpdated = true;
+            handleUpdates(BattleField.SAMPLE_SMALL_1);
         }
     }
 
@@ -104,8 +103,8 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
         {
             if (prev[i] == next[i])
             {
-                prev[i] = WITHOUT_CHANGES;
-                next[i] = WITHOUT_CHANGES;
+                prev[i] = FieldItems.WITHOUT_CHANGES;
+                next[i] = FieldItems.WITHOUT_CHANGES;
             }
         }
         char[][] prevArray = BattleField.to2Dimension(prev);
@@ -115,7 +114,7 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
         {
             for (var j = 0; j < _fieldSize; j++)
             {
-                if (prevArray[i][j] != WITHOUT_CHANGES || nextArray[i][j]!=WITHOUT_CHANGES)
+                if (prevArray[i][j] != FieldItems.WITHOUT_CHANGES || nextArray[i][j]!= FieldItems.WITHOUT_CHANGES)
                 {
                     foreach (var handler in fieldHandlers)
                     {
@@ -127,5 +126,4 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
             }
         }
     }
-
 }

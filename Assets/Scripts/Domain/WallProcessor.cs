@@ -15,22 +15,22 @@ public class WallProcessor : FieldProcessor<Wall>
     public const int DESTROYED_LEFT = 1 << 4;
     public const int DESTROYED_RIGHT = 1 << 5;
 
-    private const string wallSymbols = "╬╩╦╠╣╨╥╞╡│─┌┐└┘";
-    const char CONSTRUCTION = '╬';
-    const char CONSTRUCTION_DESTROYED_DOWN = '╩';
-    const char CONSTRUCTION_DESTROYED_UP = '╦';
-    const char CONSTRUCTION_DESTROYED_LEFT = '╠';
-    const char CONSTRUCTION_DESTROYED_RIGHT = '╣';
-    const char CONSTRUCTION_DESTROYED_DOWN_TWICE = '╨';
-    const char CONSTRUCTION_DESTROYED_UP_TWICE = '╥';
-    const char CONSTRUCTION_DESTROYED_LEFT_TWICE = '╞';
-    const char CONSTRUCTION_DESTROYED_RIGHT_TWICE = '╡';
-    const char CONSTRUCTION_DESTROYED_LEFT_RIGHT = '│';
-    const char CONSTRUCTION_DESTROYED_UP_DOWN = '─';
-    const char CONSTRUCTION_DESTROYED_UP_LEFT = '┌';
-    const char CONSTRUCTION_DESTROYED_RIGHT_UP = '┐';
-    const char CONSTRUCTION_DESTROYED_DOWN_LEFT = '└';
-    const char CONSTRUCTION_DESTROYED_DOWN_RIGHT = '┘';
+    private static string wallSymbols = ""
+        + FieldItems.CONSTRUCTION
+        + FieldItems.CONSTRUCTION_DESTROYED_DOWN
+        + FieldItems.CONSTRUCTION_DESTROYED_UP
+        + FieldItems.CONSTRUCTION_DESTROYED_LEFT
+        + FieldItems.CONSTRUCTION_DESTROYED_RIGHT
+        + FieldItems.CONSTRUCTION_DESTROYED_DOWN_TWICE
+        + FieldItems.CONSTRUCTION_DESTROYED_UP_TWICE
+        + FieldItems.CONSTRUCTION_DESTROYED_LEFT_TWICE
+        + FieldItems.CONSTRUCTION_DESTROYED_RIGHT_TWICE
+        + FieldItems.CONSTRUCTION_DESTROYED_LEFT_RIGHT
+        + FieldItems.CONSTRUCTION_DESTROYED_UP_DOWN
+        + FieldItems.CONSTRUCTION_DESTROYED_UP_LEFT
+        + FieldItems.CONSTRUCTION_DESTROYED_RIGHT_UP
+        + FieldItems.CONSTRUCTION_DESTROYED_DOWN_LEFT
+        + FieldItems.CONSTRUCTION_DESTROYED_DOWN_RIGHT;
 
     public WallProcessor(EcsWorld world, EcsFilter<Wall> filter) : base(world, filter)
     {
@@ -114,6 +114,7 @@ public class WallProcessor : FieldProcessor<Wall>
             Quaternion.Euler(0, 0, 0)
         ) as GameObject;
         Wall wall = createOrGetComponent(unityObject, out entityId); ;
+        wall.entityId = entityId;
         wall.column = column;
         wall.row = row;
         wall.transform = unityObject.transform;
@@ -130,49 +131,49 @@ public class WallProcessor : FieldProcessor<Wall>
         int damaged = NOT_DESTROYED;
         switch (field[row][column])
         {
-            case CONSTRUCTION:
+            case FieldItems.CONSTRUCTION:
                 damaged = 0;
                 break;
-            case CONSTRUCTION_DESTROYED_DOWN:
+            case FieldItems.CONSTRUCTION_DESTROYED_DOWN:
                 damaged = DESTROYED_DOWN;
                 break;
-            case CONSTRUCTION_DESTROYED_UP:
+            case FieldItems.CONSTRUCTION_DESTROYED_UP:
                 damaged = DESTROYED_UP;
                 break;
-            case CONSTRUCTION_DESTROYED_LEFT:
+            case FieldItems.CONSTRUCTION_DESTROYED_LEFT:
                 damaged = DESTROYED_LEFT;
                 break;
-            case CONSTRUCTION_DESTROYED_RIGHT:
+            case FieldItems.CONSTRUCTION_DESTROYED_RIGHT:
                 damaged = DESTROYED_RIGHT;
                 break;
-            case CONSTRUCTION_DESTROYED_DOWN_TWICE:
+            case FieldItems.CONSTRUCTION_DESTROYED_DOWN_TWICE:
                 damaged = DESTROYED_DOWN | DESTROYED_CENTER_HOR;
                 break;
-            case CONSTRUCTION_DESTROYED_UP_TWICE:
+            case FieldItems.CONSTRUCTION_DESTROYED_UP_TWICE:
                 damaged = DESTROYED_UP | DESTROYED_CENTER_HOR;
                 break;
-            case CONSTRUCTION_DESTROYED_LEFT_TWICE:
+            case FieldItems.CONSTRUCTION_DESTROYED_LEFT_TWICE:
                 damaged = DESTROYED_LEFT | DESTROYED_CENTER_VERT;
                 break;
-            case CONSTRUCTION_DESTROYED_RIGHT_TWICE:
+            case FieldItems.CONSTRUCTION_DESTROYED_RIGHT_TWICE:
                 damaged = DESTROYED_RIGHT | DESTROYED_CENTER_VERT;
                 break;
-            case CONSTRUCTION_DESTROYED_LEFT_RIGHT:
+            case FieldItems.CONSTRUCTION_DESTROYED_LEFT_RIGHT:
                 damaged = DESTROYED_RIGHT | DESTROYED_LEFT;
                 break;
-            case CONSTRUCTION_DESTROYED_UP_DOWN:
+            case FieldItems.CONSTRUCTION_DESTROYED_UP_DOWN:
                 damaged = DESTROYED_UP | DESTROYED_DOWN;
                 break;
-            case CONSTRUCTION_DESTROYED_UP_LEFT:
+            case FieldItems.CONSTRUCTION_DESTROYED_UP_LEFT:
                 damaged = DESTROYED_UP | DESTROYED_CENTER_VERT | DESTROYED_CENTER_HOR | DESTROYED_LEFT;
                 break;
-            case CONSTRUCTION_DESTROYED_RIGHT_UP:
+            case FieldItems.CONSTRUCTION_DESTROYED_RIGHT_UP:
                 damaged = DESTROYED_UP | DESTROYED_CENTER_VERT | DESTROYED_CENTER_HOR | DESTROYED_RIGHT;
                 break;
-            case CONSTRUCTION_DESTROYED_DOWN_LEFT:
+            case FieldItems.CONSTRUCTION_DESTROYED_DOWN_LEFT:
                 damaged = DESTROYED_DOWN | DESTROYED_CENTER_VERT | DESTROYED_CENTER_HOR | DESTROYED_LEFT;
                 break;
-            case CONSTRUCTION_DESTROYED_DOWN_RIGHT:
+            case FieldItems.CONSTRUCTION_DESTROYED_DOWN_RIGHT:
                 damaged = DESTROYED_DOWN | DESTROYED_CENTER_VERT | DESTROYED_CENTER_HOR | DESTROYED_RIGHT;
                 break;
         }

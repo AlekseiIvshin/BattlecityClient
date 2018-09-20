@@ -25,6 +25,7 @@ public class UndestroyableWallProcessor : FieldProcessor<UndestroyableWall>
         int entityId;
         GameObject unityObject = Object.Instantiate(AssetDatabase.LoadAssetAtPath("Assets/Prefabs/UndestroyableWall.prefab", typeof(GameObject)), MapUtils.getWorldPosition(_fieldSize, row, column), Quaternion.Euler(0, 0, 0)) as GameObject;
         UndestroyableWall wall = createOrGetComponent(unityObject, out entityId);
+        wall.entityId = entityId;
         wall.column = column;
         wall.row = row;
         return wall;

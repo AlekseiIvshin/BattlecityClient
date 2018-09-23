@@ -4,3 +4,11 @@
 [submodule "Assets/LeopotamGroup/Ecs.UnityIntegration"]
 	path = Assets/LeopotamGroup/Ecs.UnityIntegration
 	url = git://github.com/Leopotam/ecs-unityintegration.git
+[submodule "WebSocket"]
+	path = WebSocket
+	
+	url = https://github.com/sta/websocket-sharp
+[submodule "Assets/WebSocket"]
+	
+	path = Assets/WebSocket
+	url = https://github.com/sta/websocket-sharp

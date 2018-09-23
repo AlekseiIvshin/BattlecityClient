@@ -9,16 +9,21 @@ public class BulletProcessor : FieldProcessor<Bullet>
 
     public static int getDirection(char symbol)
     {
-        switch (symbol)
+        if (symbol == FieldItems.SYMBOLS[FieldItems.BulletUp])
         {
-            case FieldItems.BULLET_UP:
-                return MapUtils.DIRECTION_UP;
-            case FieldItems.BULLET_DOWN:
-                return MapUtils.DIRECTION_DOWN;
-            case FieldItems.BULLET_LEFT:
-                return MapUtils.DIRECTION_LEFT;
-            case FieldItems.BULLET_RIGHT:
-                return MapUtils.DIRECTION_RIGHT;
+            return MapUtils.DIRECTION_UP;
+        }
+        if (symbol == FieldItems.SYMBOLS[FieldItems.BulletDown])
+        {
+            return MapUtils.DIRECTION_DOWN;
+        }
+        if (symbol == FieldItems.SYMBOLS[FieldItems.BulletLeft])
+        {
+            return MapUtils.DIRECTION_LEFT;
+        }
+        if (symbol == FieldItems.SYMBOLS[FieldItems.BulletRight])
+        {
+            return MapUtils.DIRECTION_RIGHT;
         }
         throw new System.Exception("No direction for '" + symbol + "'");
     }
@@ -78,7 +83,10 @@ public class BulletProcessor : FieldProcessor<Bullet>
 
     public override bool canProcess(char symbol)
     {
-        return symbol == FieldItems.BULLET_UP || symbol == FieldItems.BULLET_DOWN || symbol == FieldItems.BULLET_LEFT || symbol == FieldItems.BULLET_RIGHT;
+        return symbol == FieldItems.SYMBOLS[FieldItems.BulletUp] ||
+             symbol == FieldItems.SYMBOLS[FieldItems.BulletDown] ||
+              symbol == FieldItems.SYMBOLS[FieldItems.BulletRight] ||
+               symbol == FieldItems.SYMBOLS[FieldItems.BulletLeft];
     }
 
     protected override Bullet createItem(char symbol, int row, int column)

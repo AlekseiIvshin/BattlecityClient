@@ -7,8 +7,8 @@ using UnityEngine;
 [EcsInject]
 public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.Handler
 {
-    private static int GAME_WAIT_FOR_DATA = 0;
-    private static int GAME_STARTED = 1;
+    public static int GAME_WAIT_FOR_DATA = 0;
+    public static int GAME_STARTED = 1;
 
     EcsWorld _world = null;
     EcsFilter<Tank> _tanksFilter = null;
@@ -17,27 +17,21 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
     EcsFilter<Bullet> _bulletsFilter = null;
 
     private int _gameState = GAME_WAIT_FOR_DATA;
-    private string lastBattlefield;
+    private char[][] lastBattlefield;
     private int _fieldSize;
     private bool wasUpdated = false;
 
-    WallProcessor wallProcessor;
     TankProcessor tanksProcessor;
-    UndestroyableWallProcessor undestroyableWallProcessor;
-    BulletProcessor bulletProcessor;
 
     List<FieldHandler> fieldHandlers = new List<FieldHandler>();
 
     void IEcsInitSystem.Initialize()
     {
+        tanksProcessor = new TankProcessor(_world, _tanksFilter);
         fieldHandlers.Add(new WallProcessor(_world, _wallsFilter));
-        fieldHandlers.Add(new TankProcessor(_world, _tanksFilter));
         fieldHandlers.Add(new UndestroyableWallProcessor(_world, _undestroyableWallsFilter));
         fieldHandlers.Add(new BulletProcessor(_world, _bulletsFilter));
         GameStateEventManager.getInstance().subscribe(this);
-        connectToServer();
-
-        onUpdateBattlefield(BattleField.SAMPLE_SMALL);
     }
 
     void IEcsInitSystem.Destroy()
@@ -50,42 +44,41 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
         if (!wasUpdated)
         {
             wasUpdated = true;
-            handleUpdates(BattleField.SAMPLE_SMALL_1);
+            handleUpdates(BattleField.to2Dimension(BattleField.SAMPLE_SMALL_1));
         }
     }
 
-    private void connectToServer()
-    {
-        // TODO: connect with web socket
-    }
-
-    public void onUpdateBattlefield(string battlefield)
+    public void onUpdate(char[][] battlefield, Dictionary<string, TankData> tanks)
     {
         if (_gameState == GAME_WAIT_FOR_DATA)
         {
+            Debug.Log("INIT!");
+            tanksProcessor.initTanks(tanks);
             initBattlefield(battlefield);
+            _gameState = GAME_STARTED;
         }
         else
         {
-            // TODO: update field
+            Debug.Log("UPDATE!");
+            tanksProcessor.onUpdate(tanks);
+            handleUpdates(battlefield);
         }
     }
 
-    private void initBattlefield(string battlefield)
+    private void initBattlefield(char[][] field)
     {
-        char[][] field = BattleField.to2Dimension(battlefield);
         for (var i = 0; i < field.Length; i++)
         {
             for (var j = 0; j < field[i].Length; j++)
             {
-                foreach(var handler in fieldHandlers)
+                foreach (var handler in fieldHandlers)
                 {
                     handler.initItem(field[i][j], i, j);
                 }
             }
         }
 
-        this.lastBattlefield = battlefield;
+        this.lastBattlefield = field;
 
         _fieldSize = field.Length;
 
@@ -95,31 +88,35 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
         }
     }
 
-    private void handleUpdates(string newBattlefield)
+    private void handleUpdates(char[][] newBattlefield)
     {
-        char[] prev = lastBattlefield.ToCharArray();
-        char[] next = newBattlefield.ToCharArray();
-        for (var i = 0; i < newBattlefield.Length; i++)
+        char[][] prev = new char[_fieldSize][];
+        char[][] next = new char[_fieldSize][];
+        for (var i = 0; i < _fieldSize; i++)
         {
-            if (prev[i] == next[i])
+            prev[i] = new char[_fieldSize];
+            next[i] = new char[_fieldSize];
+            for (var j = 0; j < _fieldSize; j++)
             {
-                prev[i] = FieldItems.WITHOUT_CHANGES;
-                next[i] = FieldItems.WITHOUT_CHANGES;
+                if (prev[i][j] == next[i][j])
+                {
+                    prev[i][j] = FieldItems.WITHOUT_CHANGES;
+                    next[i][j] = FieldItems.WITHOUT_CHANGES;
+                }
             }
         }
-        char[][] prevArray = BattleField.to2Dimension(prev);
-        char[][] nextArray = BattleField.to2Dimension(next);
 
         for (var i = 0; i < _fieldSize; i++)
         {
             for (var j = 0; j < _fieldSize; j++)
             {
-                if (prevArray[i][j] != FieldItems.WITHOUT_CHANGES || nextArray[i][j]!= FieldItems.WITHOUT_CHANGES)
+                if (prev[i][j] != FieldItems.WITHOUT_CHANGES || next[i][j] != FieldItems.WITHOUT_CHANGES)
                 {
                     foreach (var handler in fieldHandlers)
                     {
-                        if (handler.canProcess(prevArray[i][j]) || (handler.canProcess(nextArray[i][j]))){
-                            handler.onFieldUpdates(prevArray, nextArray, i, j);
+                        if (handler.canProcess(prev[i][j]) || (handler.canProcess(next[i][j])))
+                        {
+                            handler.onFieldUpdates(prev, next, i, j);
                         }
                     }
                 }

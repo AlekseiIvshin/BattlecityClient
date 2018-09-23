@@ -15,22 +15,7 @@ public class WallProcessor : FieldProcessor<Wall>
     public const int DESTROYED_LEFT = 1 << 4;
     public const int DESTROYED_RIGHT = 1 << 5;
 
-    private static string wallSymbols = ""
-        + FieldItems.CONSTRUCTION
-        + FieldItems.CONSTRUCTION_DESTROYED_DOWN
-        + FieldItems.CONSTRUCTION_DESTROYED_UP
-        + FieldItems.CONSTRUCTION_DESTROYED_LEFT
-        + FieldItems.CONSTRUCTION_DESTROYED_RIGHT
-        + FieldItems.CONSTRUCTION_DESTROYED_DOWN_TWICE
-        + FieldItems.CONSTRUCTION_DESTROYED_UP_TWICE
-        + FieldItems.CONSTRUCTION_DESTROYED_LEFT_TWICE
-        + FieldItems.CONSTRUCTION_DESTROYED_RIGHT_TWICE
-        + FieldItems.CONSTRUCTION_DESTROYED_LEFT_RIGHT
-        + FieldItems.CONSTRUCTION_DESTROYED_UP_DOWN
-        + FieldItems.CONSTRUCTION_DESTROYED_UP_LEFT
-        + FieldItems.CONSTRUCTION_DESTROYED_RIGHT_UP
-        + FieldItems.CONSTRUCTION_DESTROYED_DOWN_LEFT
-        + FieldItems.CONSTRUCTION_DESTROYED_DOWN_RIGHT;
+    private static string wallSymbols = FieldItems.SYMBOLS.Substring(FieldItems.Construction, FieldItems.ConstructionDestroyed + 1 - FieldItems.Construction);
 
     public WallProcessor(EcsWorld world, EcsFilter<Wall> filter) : base(world, filter)
     {
@@ -129,54 +114,72 @@ public class WallProcessor : FieldProcessor<Wall>
     protected Wall getFieldValue(char[][] field, int row, int column)
     {
         int damaged = NOT_DESTROYED;
-        switch (field[row][column])
+
+        if (FieldItems.SYMBOLS_ARRAY[FieldItems.Construction] == field[row][column])
         {
-            case FieldItems.CONSTRUCTION:
-                damaged = 0;
-                break;
-            case FieldItems.CONSTRUCTION_DESTROYED_DOWN:
-                damaged = DESTROYED_DOWN;
-                break;
-            case FieldItems.CONSTRUCTION_DESTROYED_UP:
-                damaged = DESTROYED_UP;
-                break;
-            case FieldItems.CONSTRUCTION_DESTROYED_LEFT:
-                damaged = DESTROYED_LEFT;
-                break;
-            case FieldItems.CONSTRUCTION_DESTROYED_RIGHT:
-                damaged = DESTROYED_RIGHT;
-                break;
-            case FieldItems.CONSTRUCTION_DESTROYED_DOWN_TWICE:
-                damaged = DESTROYED_DOWN | DESTROYED_CENTER_HOR;
-                break;
-            case FieldItems.CONSTRUCTION_DESTROYED_UP_TWICE:
-                damaged = DESTROYED_UP | DESTROYED_CENTER_HOR;
-                break;
-            case FieldItems.CONSTRUCTION_DESTROYED_LEFT_TWICE:
-                damaged = DESTROYED_LEFT | DESTROYED_CENTER_VERT;
-                break;
-            case FieldItems.CONSTRUCTION_DESTROYED_RIGHT_TWICE:
-                damaged = DESTROYED_RIGHT | DESTROYED_CENTER_VERT;
-                break;
-            case FieldItems.CONSTRUCTION_DESTROYED_LEFT_RIGHT:
-                damaged = DESTROYED_RIGHT | DESTROYED_LEFT;
-                break;
-            case FieldItems.CONSTRUCTION_DESTROYED_UP_DOWN:
-                damaged = DESTROYED_UP | DESTROYED_DOWN;
-                break;
-            case FieldItems.CONSTRUCTION_DESTROYED_UP_LEFT:
-                damaged = DESTROYED_UP | DESTROYED_CENTER_VERT | DESTROYED_CENTER_HOR | DESTROYED_LEFT;
-                break;
-            case FieldItems.CONSTRUCTION_DESTROYED_RIGHT_UP:
-                damaged = DESTROYED_UP | DESTROYED_CENTER_VERT | DESTROYED_CENTER_HOR | DESTROYED_RIGHT;
-                break;
-            case FieldItems.CONSTRUCTION_DESTROYED_DOWN_LEFT:
-                damaged = DESTROYED_DOWN | DESTROYED_CENTER_VERT | DESTROYED_CENTER_HOR | DESTROYED_LEFT;
-                break;
-            case FieldItems.CONSTRUCTION_DESTROYED_DOWN_RIGHT:
-                damaged = DESTROYED_DOWN | DESTROYED_CENTER_VERT | DESTROYED_CENTER_HOR | DESTROYED_RIGHT;
-                break;
+            damaged = 0;
         }
+        if (FieldItems.SYMBOLS_ARRAY[FieldItems.ConstructionDestroyedDown] == field[row][column])
+        {
+            damaged = DESTROYED_DOWN;
+        }
+        if (FieldItems.SYMBOLS_ARRAY[FieldItems.ConstructionDestroyedUp] == field[row][column])
+        {
+            damaged = DESTROYED_UP;
+        }
+        if (FieldItems.SYMBOLS_ARRAY[FieldItems.ConstructionDestroyedLeft] == field[row][column])
+        {
+            damaged = DESTROYED_LEFT;
+        }
+        if (FieldItems.SYMBOLS_ARRAY[FieldItems.ConstructionDestroyedRight] == field[row][column])
+        {
+            damaged = DESTROYED_RIGHT;
+        }
+        if (FieldItems.SYMBOLS_ARRAY[FieldItems.ConstructionDestroyedDownTwice] == field[row][column])
+        {
+            damaged = DESTROYED_DOWN | DESTROYED_CENTER_HOR;
+        }
+        if (FieldItems.SYMBOLS_ARRAY[FieldItems.ConstructionDestroyedUpTwice] == field[row][column])
+        {
+            damaged = DESTROYED_UP | DESTROYED_CENTER_HOR;
+        }
+        if (FieldItems.SYMBOLS_ARRAY[FieldItems.ConstructionDestroyedLeftTwice] == field[row][column])
+        {
+            damaged = DESTROYED_LEFT | DESTROYED_CENTER_VERT;
+        }
+        if (FieldItems.SYMBOLS_ARRAY[FieldItems.ConstructionDestroyedRightTwice] == field[row][column])
+        {
+            damaged = DESTROYED_RIGHT | DESTROYED_CENTER_VERT;
+        }
+        if (FieldItems.SYMBOLS_ARRAY[FieldItems.ConstructionDestroyedLeftRight] == field[row][column])
+        {
+            damaged = DESTROYED_RIGHT | DESTROYED_LEFT;
+        }
+        if (FieldItems.SYMBOLS_ARRAY[FieldItems.ConstructionDestroyedUpDown] == field[row][column])
+        {
+            damaged = DESTROYED_UP | DESTROYED_DOWN;
+        }
+        if (FieldItems.SYMBOLS_ARRAY[FieldItems.ConstructionDestroyedUpLeft] == field[row][column])
+        {
+            damaged = DESTROYED_UP | DESTROYED_CENTER_VERT | DESTROYED_CENTER_HOR | DESTROYED_LEFT;
+        }
+        if (FieldItems.SYMBOLS_ARRAY[FieldItems.ConstructionDestroyedRightUp] == field[row][column])
+        {
+            damaged = DESTROYED_UP | DESTROYED_CENTER_VERT | DESTROYED_CENTER_HOR | DESTROYED_RIGHT;
+        }
+        if (FieldItems.SYMBOLS_ARRAY[FieldItems.ConstructionDestroyedLeft] == field[row][column])
+        {
+            damaged = DESTROYED_DOWN | DESTROYED_CENTER_VERT | DESTROYED_CENTER_HOR | DESTROYED_LEFT;
+        }
+        if (FieldItems.SYMBOLS_ARRAY[FieldItems.ConstructionDestroyedRight] == field[row][column])
+        {
+            damaged = DESTROYED_DOWN | DESTROYED_CENTER_VERT | DESTROYED_CENTER_HOR | DESTROYED_RIGHT;
+        }
+        if (FieldItems.SYMBOLS_ARRAY[FieldItems.ConstructionDestroyed] == field[row][column])
+        {
+            damaged = DESTROYED_CENTER_HOR | DESTROYED_UP | DESTROYED_DOWN;
+        }
+
         return new Wall
         {
             destroyed = damaged,

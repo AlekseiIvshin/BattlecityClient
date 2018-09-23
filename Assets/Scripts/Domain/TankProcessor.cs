@@ -6,16 +6,8 @@ using UnityEngine;
 
 public class TankProcessor : FieldProcessor<Tank>
 {
-    private static string tankSymbols =""+ FieldItems.TANK_UP +
-            FieldItems.OTHER_TANK_UP +
-            FieldItems.TANK_DOWN +
-            FieldItems.OTHER_TANK_DOWN +
-            FieldItems.TANK_LEFT +
-            FieldItems.OTHER_TANK_LEFT +
-            FieldItems.TANK_RIGHT +
-            FieldItems.OTHER_TANK_RIGHT;
-
-    const char DEAD_TANK = 'Ѡ';
+    private static string tankSymbols = FieldItems.SYMBOLS.Substring(FieldItems.TankUp, FieldItems.AiTankLeft + 1 - FieldItems.TankUp);
+    private static char DEAD_TANK = FieldItems.SYMBOLS_ARRAY[FieldItems.Bang];
 
     public TankProcessor(EcsWorld world, EcsFilter<Tank> filter) : base(world, filter)
     {
@@ -33,20 +25,21 @@ public class TankProcessor : FieldProcessor<Tank>
 
     public static int getDirection(char symbol)
     {
-        switch (symbol)
+        if (symbol == FieldItems.SYMBOLS[FieldItems.TankUp] || symbol == FieldItems.SYMBOLS[FieldItems.OtherTankUp])
         {
-            case FieldItems.TANK_UP:
-            case FieldItems.OTHER_TANK_UP:
-                return MapUtils.DIRECTION_UP;
-            case FieldItems.TANK_DOWN:
-            case FieldItems.OTHER_TANK_DOWN:
-                return MapUtils.DIRECTION_DOWN;
-            case FieldItems.TANK_LEFT:
-            case FieldItems.OTHER_TANK_LEFT:
-                return MapUtils.DIRECTION_LEFT;
-            case FieldItems.TANK_RIGHT:
-            case FieldItems.OTHER_TANK_RIGHT:
-                return MapUtils.DIRECTION_RIGHT;
+            return MapUtils.DIRECTION_UP;
+        }
+        if (symbol == FieldItems.SYMBOLS[FieldItems.TankDown] || symbol == FieldItems.SYMBOLS[FieldItems.OtherTankDown])
+        {
+            return MapUtils.DIRECTION_DOWN;
+        }
+        if (symbol == FieldItems.SYMBOLS[FieldItems.TankLeft] || symbol == FieldItems.SYMBOLS[FieldItems.OtherTankLeft])
+        {
+            return MapUtils.DIRECTION_LEFT;
+        }
+        if (symbol == FieldItems.SYMBOLS[FieldItems.TankRight] || symbol == FieldItems.SYMBOLS[FieldItems.OtherTankRight])
+        {
+            return MapUtils.DIRECTION_RIGHT;
         }
         throw new System.Exception("No direction for '" + symbol + "'");
     }
@@ -154,5 +147,56 @@ public class TankProcessor : FieldProcessor<Tank>
     protected override void removeItem(int row, int column)
     {
         throw new System.NotImplementedException();
+    }
+
+    public void initTanks(Dictionary<string, TankData> tanks)
+    {
+        foreach(var tankName in tanks.Keys)
+        {
+            createItem(tanks[tankName].symbol, tanks[tankName].row, tanks[tankName].column);
+        }
+    }
+
+    public void onUpdate(Dictionary<string, TankData> tanks)
+    {
+        Tank tank;
+        int moveByRow;
+        int moveByColumn;
+        int rotateBy;
+        int movementDirection;
+        foreach (var name in tanks.Keys)
+        {
+            tank = findByName(name);
+
+            if (tank ==null)
+            {
+                createItem(tanks[name].symbol, tanks[name].row, tanks[name].column);
+            }
+
+            moveByRow = tank.row-tanks[name].row;
+            moveByColumn = tank.column - tanks[name].column;
+            rotateBy = 0;
+            if (moveByColumn != 0 || moveByRow != 0)
+            {
+                movementDirection = getDirectionForMovement(moveByRow, moveByColumn, rotateBy);
+                tank.deltas.Add(TankDelta.rotateToDirection(movementDirection));
+                tank.deltas.Add(TankDelta.moveTo(tank.transform.position + MapUtils.getWorldDelta(moveByRow, moveByColumn)));
+            }
+            tank.deltas.Add(TankDelta.rotateToDirection(getDirection(tanks[name].symbol)));
+        }
+    }
+
+    public Tank findByName(string name)
+    {
+        Tank tank = null;
+        for (var entityId = 0; entityId < _filter.EntitiesCount; entityId++)
+        {
+            tank = _filter.Components1[entityId];
+            if (tank.name == name)
+            {
+                return tank;
+            }
+        }
+        return null;
     }
 }

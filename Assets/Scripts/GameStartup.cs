@@ -16,7 +16,8 @@ public class GameStartup : MonoBehaviour
         _systems = new EcsSystems(_world)
             .Add(new GameSystems())
             .Add(new TanksControlSystem())
-            .Add(new BulletControlSystem());/*
+            .Add(new BulletControlSystem())
+            .Add(new DataSystem());/*
             .Add(new NpcMovementSystem())
             .Add(new PlayerMovementSystem())
             .Add(new DamageSystem())

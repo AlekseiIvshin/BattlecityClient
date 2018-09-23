@@ -17,7 +17,7 @@ public class UndestroyableWallProcessor : FieldProcessor<UndestroyableWall>
 
     public override bool canProcess(char symbol)
     {
-        return '☼' == symbol;
+        return FieldItems.SYMBOLS[FieldItems.BattleWall] == symbol;
     }
 
     protected override UndestroyableWall createItem(char symbol, int row, int column)

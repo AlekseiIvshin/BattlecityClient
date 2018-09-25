@@ -18,6 +18,8 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
 
     private MonoBehaviour _monoBehaviour;
 
+    private long _stateVersion = 0;
+
     public DataSystem(MonoBehaviour monoBehaviour)
     {
         this._monoBehaviour = monoBehaviour;
@@ -34,27 +36,13 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
         webSocket = new WebSocket(SERVER_URL);
         webSocket.OnMessage += (sender, e) =>
         {
+            _stateVersion++;
             var node = JSON.Parse(e.Data);
             var values = node.Values;
             if (values.MoveNext())
             {
                 var heroesData = values.Current["heroesData"];
                 var field = BattleField.to2Dimension(values.Current["board"]);
-                int row;
-                int col;
-                for(var i=0;i<34;i++)
-                {
-                    for (var j = 0; j < 34; j++)
-                    {
-                        if (field[i][j] == 'U')
-                        {
-                            Debug.Log(">" + i + ", " + j);
-                            row = i;
-                            col = j;
-                        }
-                    }
-
-                }
                 var fieldSize = field.Length;
                 var tanks = new Dictionary<string, TankData>();
                 TankData tank;
@@ -70,7 +58,11 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
                     tankKey.MoveNext();
                     tanks.Add(tankKey.Current, tank);
                 }
-                GameStateEventManager.getInstance().onUpdate(field, tanks);
+                GameStateEventManager.getInstance().onUpdate(new BattlefieldState
+                {
+                    field = field,
+                    tanks = tanks,
+                }, _stateVersion);
             }
         };
 
@@ -115,6 +107,7 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
                 index++;
             }
             FieldItems.MAP_KEYS = keys;
+            _stateVersion = 0;
             webSocket.Connect();
         }
     }

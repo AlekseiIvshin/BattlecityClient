@@ -6,7 +6,7 @@ public class GameStateEventManager  {
 
     public interface Handler
     {
-        void onUpdate(char[][] battlefield, Dictionary<string, TankData> tanks);
+        void onUpdate(BattlefieldState state, long version);
     }
 
     private static GameStateEventManager instance = new GameStateEventManager();
@@ -28,11 +28,11 @@ public class GameStateEventManager  {
         handlers.Remove(handler);
     }
 
-    public void onUpdate(char[][] battlefield, Dictionary<string, TankData> tanks)
+    public void onUpdate(BattlefieldState state, long version)
     {
         foreach(var handler in handlers)
         {
-            handler.onUpdate(battlefield, tanks);
+            handler.onUpdate(state, version);
         }
     }
 }

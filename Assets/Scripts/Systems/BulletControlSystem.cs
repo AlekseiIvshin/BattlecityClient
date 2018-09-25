@@ -31,12 +31,15 @@ public class BulletControlSystem : IEcsInitSystem, IEcsRunSystem, ObjectDestroyE
     public void onDestroyEntity(int entityId)
     {
         Bullet bullet;
-        for(var i = 0;i < _bulletsFilter.EntitiesCount;i++)
+        for (var i = 0; i < _bulletsFilter.EntitiesCount; i++)
         {
             bullet = _bulletsFilter.Components1[i];
             if (bullet.entityId == entityId)
             {
-                GameObject.Destroy(bullet.transform.gameObject);
+                if (bullet.transform != null)
+                {
+                    Object.Destroy(bullet.transform.gameObject);
+                }
                 bullet.transform = null;
                 _world.RemoveEntity(entityId);
                 break;

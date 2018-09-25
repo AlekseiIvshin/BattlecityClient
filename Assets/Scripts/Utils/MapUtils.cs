@@ -12,9 +12,15 @@ public class MapUtils {
     public const int DIRECTION_DOWN = 2;
     public const int DIRECTION_LEFT = 3;
 
+    // Deprecated
     public static Vector3 getWorldPosition(int size, int row, int column)
     {
         return new Vector3(row * tileSize + tileSize/2,0, column * tileSize + tileSize / 2);
+    }
+
+    public static Vector3 mapToWorld(int row, int column)
+    {
+        return new Vector3(row * tileSize + tileSize / 2, 0, column * tileSize + tileSize / 2);
     }
 
     public static Vector3 getWorldDelta(int row, int column)
@@ -43,5 +49,18 @@ public class MapUtils {
     public static int getAngleDelta(int fromDirection, int toDirection)
     {
         return getAngle(toDirection) - getAngle(fromDirection);
+    }
+
+    public static PositionDelta calculatePositionDelta(int direction, int step)
+    {
+        switch (direction)
+        {
+            case DIRECTION_UP: return new PositionDelta { rowDelta = -step, columnDelta = 0 };
+            case DIRECTION_DOWN: return new PositionDelta { rowDelta = step, columnDelta = 0 };
+            case DIRECTION_LEFT: return new PositionDelta { rowDelta = 0, columnDelta = -step };
+            case DIRECTION_RIGHT: return new PositionDelta { rowDelta = 0, columnDelta = step };
+            case DIRECTION_UNKNOWN:
+            default: return new PositionDelta { rowDelta = 0, columnDelta = 0 };
+        }
     }
 }

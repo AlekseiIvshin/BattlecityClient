@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class TankProcessor : FieldProcessor<Tank>
+public class TankProcessor : ItemProcessor<Tank>
 {
     private static List<string> _keys = new List<string>(new string[]
     {
@@ -29,7 +29,7 @@ public class TankProcessor : FieldProcessor<Tank>
     {
     }
 
-    public static int getDirection(char symbol)
+    public static int getLocalDirection(char symbol)
     {
         switch (FieldItems.MAP_KEYS[symbol])
         {
@@ -46,7 +46,10 @@ public class TankProcessor : FieldProcessor<Tank>
             case FieldItems.KEY_OTHER_TANK_DOWN:
                 return MapUtils.DIRECTION_DOWN;
         }
-        throw new System.Exception("No direction for '" + symbol + "'");
+
+        // TODO: FIX IT: remove default value
+        return MapUtils.DIRECTION_UP;
+        //throw new System.Exception("No direction for '" + symbol + "'");
     }
 
     private static int getDirectionForMovement(int rowDelta, int columnDelta, int defaultValue)
@@ -107,27 +110,17 @@ public class TankProcessor : FieldProcessor<Tank>
         }
     }
 
-    protected override Tank createItem(char symbol, int row, int column)
+    protected override Quaternion getDirection(char symbol)
     {
-        int entityId;
-        int direction = getDirection(symbol);
-        GameObject unityObject = Object.Instantiate(
-            AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Tank.prefab", typeof(GameObject)),
-            MapUtils.getWorldPosition(_fieldSize, row, column),
-            MapUtils.getWorlRotation(direction)) as GameObject;
-        Tank tank = createOrGetComponent(unityObject, out entityId);
-        tank.entityId = entityId;
-        tank.direction = direction;
-        tank.column = column;
-        tank.row = row;
-        tank.transform = unityObject.transform;
-        tank.characterController = unityObject.GetComponent<CharacterController>();
-        return tank;
+        return MapUtils.getWorlRotation(getLocalDirection(symbol));
     }
 
-    protected override void removeItem(int row, int column)
+    protected override Tank createItem(char symbol, int row, int column)
     {
-        throw new System.NotImplementedException();
+        var tank = base.createItem(symbol, row, column);
+        tank.direction = getLocalDirection(symbol);
+        tank.characterController = tank.transform.gameObject.GetComponent<CharacterController>();
+        return tank;
     }
 
     public void initTanks(Dictionary<string, TankData> tanks)
@@ -152,6 +145,7 @@ public class TankProcessor : FieldProcessor<Tank>
             if (tank == null)
             {
                 createItem(tanks[name].symbol, tanks[name].row, tanks[name].column);
+                return;
             }
 
             moveByRow = tank.row - tanks[name].row;
@@ -163,7 +157,16 @@ public class TankProcessor : FieldProcessor<Tank>
                 tank.deltas.Add(TankDelta.rotateToDirection(movementDirection));
                 tank.deltas.Add(TankDelta.moveTo(tank.transform.position + MapUtils.getWorldDelta(moveByRow, moveByColumn)));
             }
-            tank.deltas.Add(TankDelta.rotateToDirection(getDirection(tanks[name].symbol)));
+            tank.deltas.Add(TankDelta.rotateToDirection(getLocalDirection(tanks[name].symbol)));
+        }
+        var tankNames = new List<string>(tanks.Keys);
+        for (var entityId = 0; entityId < _filter.EntitiesCount; entityId++)
+        {
+            tank = _filter.Components1[entityId];
+            if (tankNames.IndexOf(tank.name)<0)
+            {
+                removeItem(tank);
+            }
         }
     }
 
@@ -179,5 +182,15 @@ public class TankProcessor : FieldProcessor<Tank>
             }
         }
         return null;
+    }
+
+    protected override string getPrefabPath()
+    {
+        return "Assets/Prefabs/Tank.prefab";
+    }
+
+    protected override void onItenUpdated(char prev, char next, int row, int column)
+    {
+        throw new System.NotImplementedException();
     }
 }

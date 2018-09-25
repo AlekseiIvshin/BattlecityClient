@@ -6,4 +6,5 @@ public class BaseEntity {
     public int entityId;
     public int row;
     public int column;
+    public Transform transform;
 }

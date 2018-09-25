@@ -4,7 +4,7 @@ using Leopotam.Ecs;
 using UnityEditor;
 using UnityEngine;
 
-public class BulletProcessor : FieldProcessor<Bullet>
+public class BulletProcessor : ItemProcessor<Bullet>
 {
 
     private static List<string> _keys = new List<string>(new string[]
@@ -14,15 +14,18 @@ public class BulletProcessor : FieldProcessor<Bullet>
 
     private string _symbols;
 
-    public static int getDirection(char symbol)
+    private static int getLocalDirection(char symbol)
     {
         switch (FieldItems.MAP_KEYS[symbol])
         {
             case FieldItems.KEY_BULLET:
                 return MapUtils.DIRECTION_UP;
         }
-        throw new System.Exception("No direction for '" + symbol + "'");
-    }
+
+        // TODO: FIX IT: remove default value
+        return MapUtils.DIRECTION_UP;
+        //throw new System.Exception("No direction for '" + symbol + "'");
+    } 
 
     public BulletProcessor(EcsWorld world, EcsFilter<Bullet> filter) : base(world, filter)
     {
@@ -35,13 +38,21 @@ public class BulletProcessor : FieldProcessor<Bullet>
             return;
         }
 
+
+        Debug.Log("Bullet updated: '" + FieldItems.MAP_KEYS[prev[row][column]] + "' => '" + FieldItems.MAP_KEYS[next[row][column]] + "'");
         // Bullet was updated 
         if (canProcess(prev[row][column]))
         {
-            var posDelta = calculatePositionDelta(getDirection(prev[row][column]), 2);
-            var nextRow = row + posDelta.rowDelta;
-            var nextColumn = column + posDelta.columnDelta;
+            Debug.Log("Expect update bullet at (" + row + ", " + column + ")");
+            int nextRow;
+            int nextColumn;
+            if (!getCoordinatesWithDelta(prev, row, column, 2, out nextRow, out nextColumn))
+            {
+                Debug.Log("Next expected position out of battlefield");
+                return;
+            }
             var expectedNext = next[nextRow][nextColumn];
+            Debug.Log("Update bullet: expected next is '"+ expectedNext + "'");
             if (expectedNext == prev[row][column])
             {
                 var bullet = findByPosition(row, column);
@@ -59,9 +70,16 @@ public class BulletProcessor : FieldProcessor<Bullet>
         // Bullet was destroyed
         if (canProcess(prev[row][column]))
         {
-            var posDelta = calculatePositionDelta(getDirection(prev[row][column]), 2);
-            if (next[row + posDelta.rowDelta][column + posDelta.columnDelta] != prev[row][column])
+            int nextRow;
+            int nextColumn;
+            if (!getCoordinatesWithDelta(prev, row, column, 2, out nextRow, out nextColumn))
             {
+                Debug.Log("Next expected position out of battlefield");
+                return;
+            }
+            if (next[nextRow][nextColumn] != prev[row][column])
+            {
+                Debug.Log("Remove bullet at (" + row + ", " + column + ")");
                 removeItem(row, column);
             }
         }
@@ -69,9 +87,11 @@ public class BulletProcessor : FieldProcessor<Bullet>
         // Bullet was created
         if (canProcess(next[row][column]))
         {
-            var posDelta = calculatePositionDelta(getDirection(prev[row][column]), -2);
-            if (next[row][column] != prev[row + posDelta.rowDelta][column + posDelta.columnDelta])
+            int nextRow;
+            int nextColumn;
+            if (!getCoordinatesWithDelta(prev, row, column, -2, out nextRow, out nextColumn))
             {
+                Debug.Log("Add bullet at (" + row + ", " + column + ")");
                 createItem(next[row][column], row, column);
             }
         }
@@ -82,33 +102,18 @@ public class BulletProcessor : FieldProcessor<Bullet>
         return _symbols.IndexOf(symbol) >= 0;
     }
 
-    protected override Bullet createItem(char symbol, int row, int column)
+    protected override Quaternion getDirection(char symbol)
     {
-        int entityId;
-        var direction = getDirection(symbol);
-        var unityObject = Object.Instantiate(
-            AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Shell.prefab", typeof(GameObject)),
-            MapUtils.getWorldPosition(_fieldSize, row, column),
-            MapUtils.getWorlRotation(direction)) as GameObject;
-        var bullet = createOrGetComponent(unityObject, out entityId);
-        bullet.direction =direction;
-        var positionDelta = calculatePositionDelta(bullet.direction, 2);
-        bullet.entityId = entityId;
-        bullet.column = column;
-        bullet.row = row;
-        bullet.transform = unityObject.transform;
-        bullet.expectedPosition = MapUtils.getWorldPosition(_fieldSize, row + positionDelta.rowDelta, column + positionDelta.columnDelta);
-        return bullet;
+                return MapUtils.getWorlRotation(getLocalDirection(symbol));
     }
 
-    protected override void removeItem(int row, int column)
+    protected override Bullet createItem(char symbol, int row, int column)
     {
-        var bullet = findByPosition(row, column);
-        if (bullet != null)
-        {
-            Object.Destroy(bullet.transform.gameObject);
-            _world.RemoveEntity(bullet.entityId);
-        }
+        var bullet = base.createItem(symbol, row, column);
+        bullet.direction = getLocalDirection(symbol);
+        var positionDelta = MapUtils.calculatePositionDelta(bullet.direction, 2);
+        bullet.expectedPosition = MapUtils.mapToWorld(row + positionDelta.rowDelta, column + positionDelta.columnDelta);
+        return bullet;
     }
 
     public override void setMapKeys(Dictionary<char, string> mapKeys)
@@ -120,5 +125,24 @@ public class BulletProcessor : FieldProcessor<Bullet>
                 _symbols += key;
             }
         }
+        Debug.Log("Bullet symbols are '" + _symbols + "'");
+    }
+
+    protected override string getPrefabPath()
+    {
+        return "Assets/Prefabs/Shell.prefab";
+    }
+
+    protected override void onItenUpdated(char prev, char next, int row, int column)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    private bool getCoordinatesWithDelta(char[][] field, int row, int column, int step, out int nextRow, out int nextColumn)
+    {
+        var posDelta = MapUtils.calculatePositionDelta(getLocalDirection(field[row][column]), step);
+        nextRow = row + posDelta.rowDelta;
+        nextColumn = column + posDelta.columnDelta;
+        return (nextRow >= 0 && nextRow < _fieldSize && nextColumn >= 0 && nextColumn < _fieldSize);
     }
 }

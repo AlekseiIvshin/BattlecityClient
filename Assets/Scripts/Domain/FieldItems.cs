@@ -42,5 +42,6 @@ public class FieldItems
     public const string KEY_AI_TANK_RIGHT = "ai_tank_right";
     public const string KEY_AI_TANK_DOWN = "ai_tank_down";
     public const string KEY_AI_TANK_LEFT = "ai_tank_left";
+    public const string KEY_HEDGEHOG = "hedgehog";
 
 }

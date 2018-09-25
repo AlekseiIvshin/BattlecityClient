@@ -5,7 +5,7 @@ using UnityEngine;
 using Leopotam.Ecs;
 using System.Text;
 
-public class WallProcessor : FieldProcessor<Wall>
+public class WallProcessor : ImmobileItemProcessor<Wall>
 {
     public const int NOT_DESTROYED = 0;
     public const int DESTROYED_UP = 1;
@@ -75,62 +75,6 @@ public class WallProcessor : FieldProcessor<Wall>
         }
     }
 
-    public override void onFieldUpdates(char[][] prev, char[][] next, int row, int column)
-    {
-        if (!canProcess(prev[row][column]))
-        {
-            return;
-        }
-        var wall = findByPosition(row, column);
-        if (wall == null)
-        {
-            return;
-        }
-        var nextState = new Wall
-        {
-            destroyed = getDamages(next[row][column]),
-            row = row,
-            column = column
-        };
-        var prevDamages = getDamages(wall.destroyed);
-        var nextDamages = getDamages(nextState.destroyed);
-        for (var i = 0; i < 3; i++)
-        {
-            for (var j = 0; j < 3; j++)
-            {
-                if (!prevDamages[i][j] && nextDamages[i][j])
-                {
-                    var wallPart = wall.transform.Find(i + "." + j);
-                    if (wallPart != null)
-                    {
-                        wallPart.transform.position = new Vector3(wallPart.transform.position.x, -2, wallPart.transform.position.z);
-                    }
-                }
-            }
-        }
-    }
-
-    protected override Wall createItem(char symbol, int row, int column)
-    {
-        int entityId;
-        var unityObject = Object.Instantiate(
-            AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Wall.prefab", typeof(GameObject)),
-            MapUtils.getWorldPosition(_fieldSize, row, column),
-            Quaternion.Euler(0, 0, 0)
-        ) as GameObject;
-        Wall wall = createOrGetComponent(unityObject, out entityId); ;
-        wall.entityId = entityId;
-        wall.column = column;
-        wall.row = row;
-        wall.transform = unityObject.transform;
-        return wall;
-    }
-
-    protected override void removeItem(int row, int column)
-    {
-        throw new System.NotImplementedException();
-    }
-
     private int getDamages(char symbol)
     {
         switch (FieldItems.MAP_KEYS[symbol])
@@ -163,6 +107,67 @@ public class WallProcessor : FieldProcessor<Wall>
             {
                 _symbols += key;
             }
+        }
+        Debug.Log("Wall symbols are '" + _symbols + "'");
+    }
+
+    protected override string getPrefabPath()
+    {
+        return "Assets/Prefabs/Wall.prefab";
+    }
+
+    protected override void onItenUpdated(char prev, char next, int row, int column)
+    {
+        Debug.Log("Wall updated: '"+FieldItems.MAP_KEYS[prev]+"' => '"+ FieldItems.MAP_KEYS[next] +"'");
+        var wall = findByPosition(row, column);
+        if (wall == null)
+        {
+            return;
+        }
+        var nextState = new Wall
+        {
+            destroyed = getDamages(next),
+            row = row,
+            column = column
+        };
+        var prevDamages = getDamages(wall.destroyed);
+        var nextDamages = getDamages(nextState.destroyed);
+        for (var i = 0; i < 3; i++)
+        {
+            for (var j = 0; j < 3; j++)
+            {
+                if (!prevDamages[i][j] && nextDamages[i][j])
+                {
+                    applyDamageAt(wall, i, j);
+                }
+            }
+        }
+    }
+
+    protected override Wall createItem(char symbol, int row, int column)
+    {
+        var wall = base.createItem(symbol, row, column);
+        wall.destroyed = getDamages(symbol);
+        var damages = getDamages(wall.destroyed);
+        for (var i = 0; i < 3; i++)
+        {
+            for (var j = 0; j < 3; j++)
+            {
+                if (damages[i][j])
+                {
+                    applyDamageAt(wall, i, j);
+                }
+            }
+        }
+        return wall;
+    }
+
+    private void applyDamageAt(Wall wall, int row, int col)
+    {
+        var wallPart = wall.transform.Find(row + "." + col);
+        if (wallPart != null)
+        {
+            wallPart.transform.position = new Vector3(wallPart.transform.position.x, -2, wallPart.transform.position.z);
         }
     }
 }

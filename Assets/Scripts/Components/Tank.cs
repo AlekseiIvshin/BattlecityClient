@@ -6,7 +6,6 @@ public class Tank: BaseEntity
     public int direction;
     public string name;
     public float rotationSpeed;
-    public Transform transform;
     public CharacterController characterController;
     public List<TankDelta> deltas = new List<TankDelta>();
 }

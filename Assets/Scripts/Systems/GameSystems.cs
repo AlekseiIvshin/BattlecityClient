@@ -17,14 +17,14 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
     EcsFilter<Bullet> _bulletsFilter = null;
 
     private int _gameState = GAME_WAIT_FOR_DATA;
-    private char[][] lastBattlefield;
     private int _fieldSize;
-    private bool wasUpdated = false;
 
     TankProcessor tanksProcessor;
 
     List<FieldHandler> fieldHandlers = new List<FieldHandler>();
     private Dictionary<char, string> _mapKeys;
+
+    private List<BattlefieldState> _states = new List<BattlefieldState>();
 
     void IEcsInitSystem.Initialize()
     {
@@ -42,72 +42,56 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
 
     void IEcsRunSystem.Run()
     {
-        if (!wasUpdated)
+        if (_gameState == GAME_WAIT_FOR_DATA && _states.Count == 1)
         {
-            wasUpdated = true;
-            handleUpdates(BattleField.to2Dimension(BattleField.SAMPLE_SMALL_1));
+            Debug.Log("INIT!");
+            _gameState = GAME_STARTED;
+            _fieldSize = _states[0].field.Length;
+            tanksProcessor.setMapKeys(FieldItems.MAP_KEYS);
+            tanksProcessor.initTanks(_states[0].tanks);
+            initBattlefield(_states[0].field);
+        }
+        else if (_states.Count > 1)
+        {
+            var _nextState = _states[1];
+            var _prevState = _states[0];
+            _states.RemoveAt(0);
+            Debug.Log("UPDATE!");
+            //tanksProcessor.onUpdate(_nextState.tanks);
+            handleUpdates(_prevState.field, _nextState.field);
         }
     }
 
-    public void onUpdate(char[][] battlefield, Dictionary<string, TankData> tanks)
+    public void onUpdate(BattlefieldState state, long version)
     {
-        if (_gameState == GAME_WAIT_FOR_DATA)
-        {
-            Debug.Log("INIT!");
-            tanksProcessor.setMapKeys(FieldItems.MAP_KEYS);
-            tanksProcessor.initTanks(tanks);
-            initBattlefield(battlefield);
-            _gameState = GAME_STARTED;
-        }
-        else
-        {
-            Debug.Log("UPDATE!");
-            tanksProcessor.onUpdate(tanks);
-            handleUpdates(battlefield);
-        }
+        _states.Add(state);
     }
 
     private void initBattlefield(char[][] field)
     {
+        foreach (var handler in fieldHandlers)
+        {
+            handler.setMapKeys(FieldItems.MAP_KEYS);
+            handler.setFieldSize(_fieldSize);
+        }
         for (var i = 0; i < field.Length; i++)
         {
             for (var j = 0; j < field[i].Length; j++)
             {
                 foreach (var handler in fieldHandlers)
                 {
-                    handler.setMapKeys(FieldItems.MAP_KEYS);
                     handler.initItem(field[i][j], i, j);
                 }
             }
         }
-
-        this.lastBattlefield = field;
-
-        _fieldSize = field.Length;
-
-        foreach (var handler in fieldHandlers)
-        {
-            handler.setFieldSize(_fieldSize);
-        }
     }
 
-    private void handleUpdates(char[][] newBattlefield)
+    private void handleUpdates(char[][] prevBattlefield, char[][] newBattlefield)
     {
-        char[][] prev = new char[_fieldSize][];
-        char[][] next = new char[_fieldSize][];
-        for (var i = 0; i < _fieldSize; i++)
-        {
-            prev[i] = new char[_fieldSize];
-            next[i] = new char[_fieldSize];
-            for (var j = 0; j < _fieldSize; j++)
-            {
-                if (prev[i][j] == next[i][j])
-                {
-                    prev[i][j] = FieldItems.WITHOUT_CHANGES;
-                    next[i][j] = FieldItems.WITHOUT_CHANGES;
-                }
-            }
-        }
+        char[][] prev;
+        char[][] next;
+
+        getChanges(prevBattlefield, newBattlefield, out prev, out next);
 
         for (var i = 0; i < _fieldSize; i++)
         {
@@ -125,5 +109,37 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
                 }
             }
         }
+    }
+
+    private static void getChanges(char[][] prevBattlefield, char[][] newBattlefield, out char[][] prev, out char[][] next)
+    {
+        prev = deepClone(prevBattlefield);
+        next = deepClone(newBattlefield);
+        var fieldSize = prevBattlefield.Length;
+        for (var i = 0; i < fieldSize; i++)
+        {
+            for (var j = 0; j < fieldSize; j++)
+            {
+                if (prev[i][j] == next[i][j])
+                {
+                    prev[i][j] = FieldItems.WITHOUT_CHANGES;
+                    next[i][j] = FieldItems.WITHOUT_CHANGES;
+                }
+            }
+        }
+    }
+
+    private static char[][] deepClone(char[][] source)
+    {
+        var res = new char[source.Length][];
+        for (var i = 0; i < source.Length; i++)
+        {
+            res[i] = new char[source[i].Length];
+            for (var j = 0; j < source[i].Length; j++)
+            {
+                res[i][j] = source[i][j];
+            }
+        }
+        return res;
     }
 }

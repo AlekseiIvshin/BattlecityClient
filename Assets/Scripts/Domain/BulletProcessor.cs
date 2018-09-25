@@ -7,23 +7,19 @@ using UnityEngine;
 public class BulletProcessor : FieldProcessor<Bullet>
 {
 
+    private static List<string> _keys = new List<string>(new string[]
+    {
+        FieldItems.KEY_BULLET,
+    });
+
+    private string _symbols;
+
     public static int getDirection(char symbol)
     {
-        if (symbol == FieldItems.SYMBOLS[FieldItems.BulletUp])
+        switch (FieldItems.MAP_KEYS[symbol])
         {
-            return MapUtils.DIRECTION_UP;
-        }
-        if (symbol == FieldItems.SYMBOLS[FieldItems.BulletDown])
-        {
-            return MapUtils.DIRECTION_DOWN;
-        }
-        if (symbol == FieldItems.SYMBOLS[FieldItems.BulletLeft])
-        {
-            return MapUtils.DIRECTION_LEFT;
-        }
-        if (symbol == FieldItems.SYMBOLS[FieldItems.BulletRight])
-        {
-            return MapUtils.DIRECTION_RIGHT;
+            case FieldItems.KEY_BULLET:
+                return MapUtils.DIRECTION_UP;
         }
         throw new System.Exception("No direction for '" + symbol + "'");
     }
@@ -83,10 +79,7 @@ public class BulletProcessor : FieldProcessor<Bullet>
 
     public override bool canProcess(char symbol)
     {
-        return symbol == FieldItems.SYMBOLS[FieldItems.BulletUp] ||
-             symbol == FieldItems.SYMBOLS[FieldItems.BulletDown] ||
-              symbol == FieldItems.SYMBOLS[FieldItems.BulletRight] ||
-               symbol == FieldItems.SYMBOLS[FieldItems.BulletLeft];
+        return _symbols.IndexOf(symbol) >= 0;
     }
 
     protected override Bullet createItem(char symbol, int row, int column)
@@ -115,6 +108,17 @@ public class BulletProcessor : FieldProcessor<Bullet>
         {
             Object.Destroy(bullet.transform.gameObject);
             _world.RemoveEntity(bullet.entityId);
+        }
+    }
+
+    public override void setMapKeys(Dictionary<char, string> mapKeys)
+    {
+        foreach (var key in mapKeys.Keys)
+        {
+            if (_keys.IndexOf(mapKeys[key]) >= 0)
+            {
+                _symbols += key;
+            }
         }
     }
 }

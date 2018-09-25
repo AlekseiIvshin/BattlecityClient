@@ -8,4 +8,5 @@ public interface FieldHandler {
     void initItem(char symbol, int row, int column);
     void onFieldUpdates(char[][] prev, char[][] next, int row, int column);
     void setFieldSize(int fieldSize);
+    void setMapKeys(Dictionary<char, string> keys);
 }

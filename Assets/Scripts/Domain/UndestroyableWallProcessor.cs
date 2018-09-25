@@ -6,6 +6,13 @@ using UnityEngine;
 
 public class UndestroyableWallProcessor : FieldProcessor<UndestroyableWall>
 {
+    private static List<string> _keys = new List<string>(new string[]
+    {
+        FieldItems.KEY_BATTLE_WALL,
+    });
+
+    private string _symbols;
+
     public UndestroyableWallProcessor(EcsWorld world, EcsFilter<UndestroyableWall> filter) : base(world, filter)
     {
     }
@@ -17,7 +24,7 @@ public class UndestroyableWallProcessor : FieldProcessor<UndestroyableWall>
 
     public override bool canProcess(char symbol)
     {
-        return FieldItems.SYMBOLS[FieldItems.BattleWall] == symbol;
+        return _symbols.IndexOf(symbol)>=0;
     }
 
     protected override UndestroyableWall createItem(char symbol, int row, int column)
@@ -34,5 +41,16 @@ public class UndestroyableWallProcessor : FieldProcessor<UndestroyableWall>
     protected override void removeItem(int row, int column)
     {
         throw new System.NotImplementedException();
+    }
+
+    public override void setMapKeys(Dictionary<char, string> mapKeys)
+    {
+        foreach (var key in mapKeys.Keys)
+        {
+            if (_keys.IndexOf(mapKeys[key]) >= 0)
+            {
+                _symbols += key;
+            }
+        }
     }
 }

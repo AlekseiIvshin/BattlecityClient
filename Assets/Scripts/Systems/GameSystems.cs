@@ -24,6 +24,7 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
     TankProcessor tanksProcessor;
 
     List<FieldHandler> fieldHandlers = new List<FieldHandler>();
+    private Dictionary<char, string> _mapKeys;
 
     void IEcsInitSystem.Initialize()
     {
@@ -53,6 +54,7 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
         if (_gameState == GAME_WAIT_FOR_DATA)
         {
             Debug.Log("INIT!");
+            tanksProcessor.setMapKeys(FieldItems.MAP_KEYS);
             tanksProcessor.initTanks(tanks);
             initBattlefield(battlefield);
             _gameState = GAME_STARTED;
@@ -73,6 +75,7 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
             {
                 foreach (var handler in fieldHandlers)
                 {
+                    handler.setMapKeys(FieldItems.MAP_KEYS);
                     handler.initItem(field[i][j], i, j);
                 }
             }

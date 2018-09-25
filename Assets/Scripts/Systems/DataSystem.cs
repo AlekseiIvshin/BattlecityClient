@@ -5,12 +5,23 @@ using UnityEditor;
 using UnityEngine;
 using WebSocketSharp;
 using SimpleJSON;
+using UnityEngine.Networking;
+using System.Collections;
+using System.Threading;
 
 [EcsInject]
 public class DataSystem : IEcsInitSystem, IEcsRunSystem
 {
+    const string KEYS_URL = "http://codenjoy.juja.com.ua/codenjoy-contest/rest/sprites/battlecity";
     const string SERVER_URL = "ws://codenjoy.juja.com.ua/codenjoy-contest/screen-ws?user=test@test.com&code=20998118591535248716";
     const string MESSAGE = "{name: 'getScreen', allPlayersScreen: true, gameName:'battlecity'}";
+
+    private MonoBehaviour _monoBehaviour;
+
+    public DataSystem(MonoBehaviour monoBehaviour)
+    {
+        this._monoBehaviour = monoBehaviour;
+    }
 
     WebSocket webSocket;
 
@@ -29,6 +40,22 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
             {
                 var heroesData = values.Current["heroesData"];
                 var field = BattleField.to2Dimension(values.Current["board"]);
+                int row;
+                int col;
+                for(var i=0;i<34;i++)
+                {
+                    for (var j = 0; j < 34; j++)
+                    {
+                        if (field[i][j] == 'U')
+                        {
+                            Debug.Log(">" + i + ", " + j);
+                            row = i;
+                            col = j;
+                        }
+                    }
+
+                }
+                var fieldSize = field.Length;
                 var tanks = new Dictionary<string, TankData>();
                 TankData tank;
                 foreach(var tankNode in heroesData.Values)
@@ -37,7 +64,7 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
                     var tankValue = tankNode.Values;
                     tankValue.MoveNext();
                     tank.column = tankValue.Current["coordinate"]["x"];
-                    tank.row = tankValue.Current["coordinate"]["y"];
+                    tank.row = fieldSize - tankValue.Current["coordinate"]["y"];
                     tank.symbol = field[tank.row][tank.column];
                     var tankKey = tankNode.Keys;
                     tankKey.MoveNext();
@@ -47,8 +74,7 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
             }
         };
 
-        webSocket.Connect();
-
+        this._monoBehaviour.StartCoroutine(getFieldMapping());
     }
 
     void IEcsInitSystem.Destroy()
@@ -68,4 +94,28 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
         }
     }
 
+    private IEnumerator getFieldMapping()
+    {
+        var request = UnityWebRequest.Get(KEYS_URL);
+        yield return request.SendWebRequest();
+
+        if (request.isNetworkError || request.isHttpError)
+        {
+            Debug.Log(request.error);
+        }
+        else
+        {
+            // Show results as text
+            var node = JSON.Parse(request.downloadHandler.text);
+            var index = 0;
+            var keys = new Dictionary<char, string>();
+            foreach( var val in node.Values)
+            {
+                keys.Add(FieldItems.ALPHABET[index], val);
+                index++;
+            }
+            FieldItems.MAP_KEYS = keys;
+            webSocket.Connect();
+        }
+    }
 }

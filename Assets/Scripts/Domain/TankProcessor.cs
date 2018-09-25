@@ -6,40 +6,45 @@ using UnityEngine;
 
 public class TankProcessor : FieldProcessor<Tank>
 {
-    private static string tankSymbols = FieldItems.SYMBOLS.Substring(FieldItems.TankUp, FieldItems.AiTankLeft + 1 - FieldItems.TankUp);
-    private static char DEAD_TANK = FieldItems.SYMBOLS_ARRAY[FieldItems.Bang];
+    private static List<string> _keys = new List<string>(new string[]
+    {
+        FieldItems.KEY_TANK_UP,
+        FieldItems.KEY_OTHER_TANK_UP,
+        FieldItems.KEY_TANK_LEFT,
+        FieldItems.KEY_OTHER_TANK_LEFT,
+        FieldItems.KEY_TANK_RIGHT,
+        FieldItems.KEY_OTHER_TANK_RIGHT,
+        FieldItems.KEY_TANK_DOWN,
+        FieldItems.KEY_OTHER_TANK_DOWN,
+    });
+    private static List<string> _deadKeys = new List<string>(new string[]
+    {
+        FieldItems.KEY_BANG,
+    });
+
+    private string _tankSymbols;
+    private string _deadTankSymbols;
 
     public TankProcessor(EcsWorld world, EcsFilter<Tank> filter) : base(world, filter)
     {
     }
 
-    public static bool isTank(char symbol)
-    {
-        return tankSymbols.IndexOf(symbol) >= 0;
-    }
-
-    public static bool isDesctroyedTank(char symbol)
-    {
-        return symbol == DEAD_TANK;
-    }
-
     public static int getDirection(char symbol)
     {
-        if (symbol == FieldItems.SYMBOLS[FieldItems.TankUp] || symbol == FieldItems.SYMBOLS[FieldItems.OtherTankUp])
+        switch (FieldItems.MAP_KEYS[symbol])
         {
-            return MapUtils.DIRECTION_UP;
-        }
-        if (symbol == FieldItems.SYMBOLS[FieldItems.TankDown] || symbol == FieldItems.SYMBOLS[FieldItems.OtherTankDown])
-        {
-            return MapUtils.DIRECTION_DOWN;
-        }
-        if (symbol == FieldItems.SYMBOLS[FieldItems.TankLeft] || symbol == FieldItems.SYMBOLS[FieldItems.OtherTankLeft])
-        {
-            return MapUtils.DIRECTION_LEFT;
-        }
-        if (symbol == FieldItems.SYMBOLS[FieldItems.TankRight] || symbol == FieldItems.SYMBOLS[FieldItems.OtherTankRight])
-        {
-            return MapUtils.DIRECTION_RIGHT;
+            case FieldItems.KEY_TANK_UP:
+            case FieldItems.KEY_OTHER_TANK_UP:
+                return MapUtils.DIRECTION_UP;
+            case FieldItems.KEY_TANK_LEFT:
+            case FieldItems.KEY_OTHER_TANK_LEFT:
+                return MapUtils.DIRECTION_LEFT;
+            case FieldItems.KEY_TANK_RIGHT:
+            case FieldItems.KEY_OTHER_TANK_RIGHT:
+                return MapUtils.DIRECTION_RIGHT;
+            case FieldItems.KEY_TANK_DOWN:
+            case FieldItems.KEY_OTHER_TANK_DOWN:
+                return MapUtils.DIRECTION_DOWN;
         }
         throw new System.Exception("No direction for '" + symbol + "'");
     }
@@ -74,55 +79,31 @@ public class TankProcessor : FieldProcessor<Tank>
 
     public override void onFieldUpdates(char[][] prev, char[][] next, int row, int column)
     {
-        if (!isTank(prev[row][column]))
+        // Do nothing
+    }
+
+    public bool isTank(char symbol)
+    {
+        return _tankSymbols.IndexOf(symbol) >= 0;
+    }
+
+    public bool isDesctroyedTank(char symbol)
+    {
+        return _deadTankSymbols.IndexOf(symbol) >= 0;
+    }
+
+    public override void setMapKeys(Dictionary<char, string> mapKeys)
+    {
+        foreach (var key in mapKeys.Keys)
         {
-            return;
-        }
-        var tank = findByPosition(row, column);
-        if (tank == null || tank.deltas.Count > 0)
-        {
-            return;
-        }
-        var nextState = next[row][column];
-        var moveByRow = 0;
-        var moveByColumn = 0;
-        var rotateBy = 0;
-        if (!isTank(nextState))
-        {
-            if (isTank(next[row - 1][column]))
+            if (_keys.IndexOf(mapKeys[key]) >= 0)
             {
-                moveByRow -= 1;
-                nextState = next[row - 1][column];
+                _tankSymbols += key;
             }
-            else if (isTank(next[row + 1][column]))
+            if (_deadKeys.IndexOf( mapKeys[key])>=0)
             {
-                moveByRow += 1;
-                nextState = next[row + 1][column];
+                _deadTankSymbols += key;
             }
-            else if (isTank(next[row][column - 1]))
-            {
-                moveByColumn -= 1;
-                nextState = next[row][column - 1];
-            }
-            else if (isTank(next[row][column + 1]))
-            {
-                moveByColumn += 1;
-                nextState = next[row][column + 1];
-            }
-        }
-        if (!isDesctroyedTank(nextState))
-        {
-            // TODO: tank was destroyed
-        }
-        if (moveByColumn != 0 || moveByRow != 0)
-        {
-            var movementDirection = getDirectionForMovement(moveByRow, moveByColumn, rotateBy);
-            tank.deltas.Add(TankDelta.rotateToDirection(movementDirection));
-            tank.deltas.Add(TankDelta.moveTo(tank.transform.position + MapUtils.getWorldDelta(moveByRow, moveByColumn)));
-        }
-        if (isTank(nextState))
-        {
-            tank.deltas.Add(TankDelta.rotateToDirection(getDirection(nextState)));
         }
     }
 
@@ -131,8 +112,8 @@ public class TankProcessor : FieldProcessor<Tank>
         int entityId;
         int direction = getDirection(symbol);
         GameObject unityObject = Object.Instantiate(
-            AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Tank.prefab", typeof(GameObject)), 
-            MapUtils.getWorldPosition(_fieldSize, row, column), 
+            AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Tank.prefab", typeof(GameObject)),
+            MapUtils.getWorldPosition(_fieldSize, row, column),
             MapUtils.getWorlRotation(direction)) as GameObject;
         Tank tank = createOrGetComponent(unityObject, out entityId);
         tank.entityId = entityId;
@@ -151,7 +132,7 @@ public class TankProcessor : FieldProcessor<Tank>
 
     public void initTanks(Dictionary<string, TankData> tanks)
     {
-        foreach(var tankName in tanks.Keys)
+        foreach (var tankName in tanks.Keys)
         {
             createItem(tanks[tankName].symbol, tanks[tankName].row, tanks[tankName].column);
         }
@@ -168,12 +149,12 @@ public class TankProcessor : FieldProcessor<Tank>
         {
             tank = findByName(name);
 
-            if (tank ==null)
+            if (tank == null)
             {
                 createItem(tanks[name].symbol, tanks[name].row, tanks[name].column);
             }
 
-            moveByRow = tank.row-tanks[name].row;
+            moveByRow = tank.row - tanks[name].row;
             moveByColumn = tank.column - tanks[name].column;
             rotateBy = 0;
             if (moveByColumn != 0 || moveByRow != 0)

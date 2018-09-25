@@ -30,6 +30,7 @@ public abstract class FieldProcessor<T>: FieldHandler where T : BaseEntity, new(
 
     public abstract void onFieldUpdates(char[][] prev, char[][] next, int row, int column);
     public abstract bool canProcess(char symbol);
+    public abstract void setMapKeys(Dictionary<char, string> keys);
     protected abstract T createItem(char symbol, int row, int column);
     protected abstract void removeItem(int row, int column);
 

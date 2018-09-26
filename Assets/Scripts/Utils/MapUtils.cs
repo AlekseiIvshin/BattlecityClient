@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MapUtils {
 
-    const float tileSize = 3f;
+    public const float tileSize = 3f;
 
     public const int DIRECTION_UNKNOWN = -1;
     public const int DIRECTION_UP = 0;

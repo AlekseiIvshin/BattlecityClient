@@ -52,7 +52,7 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
                     var tankValue = tankNode.Values;
                     tankValue.MoveNext();
                     tank.column = tankValue.Current["coordinate"]["x"];
-                    tank.row = fieldSize - tankValue.Current["coordinate"]["y"];
+                    tank.row = fieldSize - tankValue.Current["coordinate"]["y"] -1;
                     tank.symbol = field[tank.row][tank.column];
                     var tankKey = tankNode.Keys;
                     tankKey.MoveNext();

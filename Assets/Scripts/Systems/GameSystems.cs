@@ -53,12 +53,12 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
         }
         else if (_states.Count > 1)
         {
-            var _nextState = _states[1];
-            var _prevState = _states[0];
-            _states.RemoveAt(0);
-            Debug.Log("UPDATE!");
+            //var _nextState = _states[1];
+            //var _prevState = _states[0];
+            //_states.RemoveAt(0);
+            //Debug.Log("UPDATE!");
             //tanksProcessor.onUpdate(_nextState.tanks);
-            handleUpdates(_prevState.field, _nextState.field);
+            //handleUpdates(_prevState.field, _nextState.field);
         }
     }
 

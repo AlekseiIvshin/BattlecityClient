@@ -17,7 +17,8 @@ public class GameStartup : MonoBehaviour
             .Add(new GameSystems())
             .Add(new TanksControlSystem())
             .Add(new BulletControlSystem())
-            .Add(new DataSystem(this));/*
+            .Add(new DataSystem(this))
+            .Add(new MainCameraSystem());/*
             .Add(new NpcMovementSystem())
             .Add(new PlayerMovementSystem())
             .Add(new DamageSystem())

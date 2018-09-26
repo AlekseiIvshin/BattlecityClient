@@ -192,4 +192,10 @@ public class TankProcessor : ItemProcessor<Tank>
     {
         throw new System.NotImplementedException();
     }
+
+    protected override void removeItem(Tank entity)
+    {
+        entity.deltas = null;
+        base.removeItem(entity);
+    }
 }

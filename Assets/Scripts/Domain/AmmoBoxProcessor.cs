@@ -5,17 +5,16 @@ using UnityEngine;
 using Leopotam.Ecs;
 using System.Text;
 
-public class AmmoBoxProcessor : ImmobileItemProcessor<Wall>
+public class HedgehogProcessor : ImmobileItemProcessor<Wall>
 {
-
     private static List<string> _keys = new List<string>(new string[]
     {
-        MapItems.KEY_HEDGEHOG,
+        MapItems.KEY_BONUS_AMMO,
     });
 
     private string _symbols;
 
-    public AmmoBoxProcessor(EcsWorld world, EcsFilter<Wall> filter) : base(world, filter)
+    public HedgehogProcessor(EcsWorld world, EcsFilter<Wall> filter) : base(world, filter)
     {
     }
 
@@ -33,12 +32,12 @@ public class AmmoBoxProcessor : ImmobileItemProcessor<Wall>
                 _symbols += key;
             }
         }
-        Debug.Log("Hedgehog symbols are '" + _symbols + "'");
+        Debug.Log("Ammo box symbols are '" + _symbols + "'");
     }
 
     protected override string getPrefabPath()
     {
-        return "Assets/Prefabs/Hedgehog.prefab";
+        return "Assets/Prefabs/AmmoBox.prefab";
     }
 
     protected override void onItenUpdated(char prev, char next, int row, int column)

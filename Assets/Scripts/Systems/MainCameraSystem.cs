@@ -11,18 +11,13 @@ using System.Threading;
 [EcsInject]
 public class MainCameraSystem : IEcsInitSystem, IEcsRunSystem
 {
-
-    // TODO: move to share 
-    private static int fieldSize = 34;
+    EcsFilterSingle<SharedGameState> _gameState = null;
 
     private static readonly float PanSpeed = 20f;
     private static readonly float ZoomSpeedMouse = 5f;
     private static readonly float RotateSpeed = 100f;
 
-    private static readonly float[] BoundsX = new float[] { 0f, fieldSize * MapUtils.tileSize };
-    private static readonly float[] BoundsY = new float[] { 0f, fieldSize };
-    private static readonly float[] BoundsZ = new float[] { 0f, fieldSize * MapUtils.tileSize };
-    private static readonly float[] ZoomBounds = new float[] { 10f, 85f };
+    private float[] ZoomBounds = new float[] { 10f, 85f };
 
     private Camera cam;
     private GameObject cameraContainer;
@@ -49,7 +44,6 @@ public class MainCameraSystem : IEcsInitSystem, IEcsRunSystem
 
     void IEcsRunSystem.Run()
     {
-
         // On mouse down, capture it's position.
         // Otherwise, if the mouse is still down, pan the camera.
         if (Input.GetMouseButtonDown(0))
@@ -88,8 +82,8 @@ public class MainCameraSystem : IEcsInitSystem, IEcsRunSystem
 
         // Ensure the camera remains within bounds.
         Vector3 pos = cameraContainer.transform.position;
-        pos.x = Mathf.Clamp(cameraContainer.transform.position.x, BoundsX[0], BoundsX[1]);
-        pos.z = Mathf.Clamp(cameraContainer.transform.position.z, BoundsZ[0], BoundsZ[1]);
+        pos.x = Mathf.Clamp(cameraContainer.transform.position.x, 0f, MapUtils.tileSize*_gameState.Data.fieldSize);
+        pos.z = Mathf.Clamp(cameraContainer.transform.position.z, 0f, MapUtils.tileSize * _gameState.Data.fieldSize);
         cameraContainer.transform.position = pos;
 
         // Cache the position
@@ -104,7 +98,7 @@ public class MainCameraSystem : IEcsInitSystem, IEcsRunSystem
         }
         cameraContainer.transform.Translate(cameraContainer.transform.up * (-offset), Space.World);
         Vector3 pos = cameraContainer.transform.position;
-        pos.y = Mathf.Clamp(cameraContainer.transform.position.y, BoundsY[0], BoundsY[1]);
+        pos.y = Mathf.Clamp(cameraContainer.transform.position.y, 0, _gameState.Data.fieldSize);
         cameraContainer.transform.position = pos;
     }
 

@@ -72,6 +72,7 @@ public abstract class ItemProcessor<T> : FieldHandler where T : BaseEntity, new(
         var entity = findByPosition(row, column);
         if (entity != null)
         {
+            Debug.Log("Remove item: id=" + entity.entityId+"; type="+ typeof(T));
             removeItem(entity);
         }
     }

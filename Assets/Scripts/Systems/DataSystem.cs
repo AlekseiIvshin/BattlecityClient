@@ -16,6 +16,8 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
     const string SERVER_URL = "ws://codenjoy.juja.com.ua/codenjoy-contest/screen-ws?user=test@test.com&code=20998118591535248716";
     const string MESSAGE = "{name: 'getScreen', allPlayersScreen: true, gameName:'battlecity'}";
 
+    EcsFilterSingle<SharedGameState> _gameState = null;
+
     private MonoBehaviour _monoBehaviour;
 
     private long _stateVersion = 0;
@@ -57,6 +59,10 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
                     var tankKey = tankNode.Keys;
                     tankKey.MoveNext();
                     tanks.Add(tankKey.Current, tank);
+                }
+                if (_gameState.Data.fieldSize!= fieldSize)
+                {
+                    _gameState.Data.fieldSize = fieldSize;
                 }
                 GameStateEventManager.getInstance().onUpdate(new BattlefieldState
                 {

@@ -25,7 +25,7 @@ public class BulletProcessor : ItemProcessor<Bullet>
         // TODO: FIX IT: remove default value
         return MapUtils.DIRECTION_UP;
         //throw new System.Exception("No direction for '" + symbol + "'");
-    } 
+    }
 
     public BulletProcessor(EcsWorld world, EcsFilter<Bullet> filter) : base(world, filter)
     {
@@ -49,10 +49,11 @@ public class BulletProcessor : ItemProcessor<Bullet>
             if (!getCoordinatesWithDelta(prev, row, column, 2, out nextRow, out nextColumn))
             {
                 Debug.Log("Next expected position out of battlefield");
+                removeItem(row, column);
                 return;
             }
             var expectedNext = next[nextRow][nextColumn];
-            Debug.Log("Update bullet: expected next is '"+ expectedNext + "'");
+            Debug.Log("Update bullet: expected next is '" + expectedNext + "'");
             if (expectedNext == prev[row][column])
             {
                 var bullet = findByPosition(row, column);
@@ -104,7 +105,7 @@ public class BulletProcessor : ItemProcessor<Bullet>
 
     protected override Quaternion getDirection(char symbol)
     {
-                return MapUtils.getWorlRotation(getLocalDirection(symbol));
+        return MapUtils.getWorlRotation(getLocalDirection(symbol));
     }
 
     protected override Bullet createItem(char symbol, int row, int column)

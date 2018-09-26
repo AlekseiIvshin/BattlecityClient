@@ -30,6 +30,7 @@ public class ObjectDestroyEventManager {
 
     public void destroyEntity(int entityId)
     {
+        Debug.Log("ObjectDestroyEventManager >> destroying by id = " + entityId);
         foreach (var handler in handlers)
         {
             handler.onDestroyEntity(entityId);

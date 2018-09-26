@@ -13,6 +13,9 @@ public class GameStartup : MonoBehaviour
 #if UNITY_EDITOR
         Leopotam.Ecs.UnityIntegration.EcsWorldObserver.Create (_world);
 #endif  
+
+        var sharedData = EcsFilterSingle<SharedGameState>.Create(_world);
+
         _systems = new EcsSystems(_world)
             .Add(new GameSystems())
             .Add(new TanksControlSystem())

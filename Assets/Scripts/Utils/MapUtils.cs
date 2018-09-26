@@ -63,4 +63,24 @@ public class MapUtils {
             default: return new PositionDelta { rowDelta = 0, columnDelta = 0 };
         }
     }
+
+    public static char[][] to2Dimension(string fieldSource)
+    {
+        return to2Dimension(fieldSource.ToCharArray());
+    }
+
+    public static char[][] to2Dimension(char[] fieldSource)
+    {
+        var size = (int)Mathf.Sqrt(fieldSource.Length);
+        char[][] field = new char[size][];
+        for (var i = 0; i < size; i++)
+        {
+            field[i] = new char[size];
+            for (var j = 0; j < size; j++)
+            {
+                field[i][j] = fieldSource[i * size + j];
+            }
+        }
+        return field;
+    }
 }

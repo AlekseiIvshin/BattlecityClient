@@ -32,7 +32,7 @@ public class ObjectDestroyEventManager {
     {
         foreach (var handler in handlers)
         {
-            //handler.onDestroyEntity(entityId);
+            handler.onDestroyEntity(entityId);
         }
     }
 }

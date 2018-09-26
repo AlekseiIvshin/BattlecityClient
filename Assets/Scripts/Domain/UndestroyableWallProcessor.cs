@@ -8,7 +8,7 @@ public class UndestroyableWallProcessor : ImmobileItemProcessor<UndestroyableWal
 {
     private static List<string> _keys = new List<string>(new string[]
     {
-        FieldItems.KEY_BATTLE_WALL,
+        MapItems.KEY_BATTLE_WALL,
     });
 
     private string _symbols;

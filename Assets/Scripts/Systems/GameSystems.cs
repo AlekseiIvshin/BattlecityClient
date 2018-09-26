@@ -47,18 +47,18 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
             Debug.Log("INIT!");
             _gameState = GAME_STARTED;
             _fieldSize = _states[0].field.Length;
-            tanksProcessor.setMapKeys(FieldItems.MAP_KEYS);
+            tanksProcessor.setMapKeys(MapItems.MAP_KEYS);
             tanksProcessor.initTanks(_states[0].tanks);
             initBattlefield(_states[0].field);
         }
         else if (_states.Count > 1)
         {
-            //var _nextState = _states[1];
-            //var _prevState = _states[0];
-            //_states.RemoveAt(0);
-            //Debug.Log("UPDATE!");
-            //tanksProcessor.onUpdate(_nextState.tanks);
-            //handleUpdates(_prevState.field, _nextState.field);
+            var _nextState = _states[1];
+            var _prevState = _states[0];
+            _states.RemoveAt(0);
+            Debug.Log("UPDATE!");
+            tanksProcessor.onUpdate(_nextState.tanks);
+            handleUpdates(_prevState.field, _nextState.field);
         }
     }
 
@@ -71,7 +71,7 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
     {
         foreach (var handler in fieldHandlers)
         {
-            handler.setMapKeys(FieldItems.MAP_KEYS);
+            handler.setMapKeys(MapItems.MAP_KEYS);
             handler.setFieldSize(_fieldSize);
         }
         for (var i = 0; i < field.Length; i++)
@@ -97,7 +97,7 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
         {
             for (var j = 0; j < _fieldSize; j++)
             {
-                if (prev[i][j] != FieldItems.WITHOUT_CHANGES || next[i][j] != FieldItems.WITHOUT_CHANGES)
+                if (prev[i][j] != MapItems.WITHOUT_CHANGES || next[i][j] != MapItems.WITHOUT_CHANGES)
                 {
                     foreach (var handler in fieldHandlers)
                     {
@@ -122,8 +122,8 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
             {
                 if (prev[i][j] == next[i][j])
                 {
-                    prev[i][j] = FieldItems.WITHOUT_CHANGES;
-                    next[i][j] = FieldItems.WITHOUT_CHANGES;
+                    prev[i][j] = MapItems.WITHOUT_CHANGES;
+                    next[i][j] = MapItems.WITHOUT_CHANGES;
                 }
             }
         }

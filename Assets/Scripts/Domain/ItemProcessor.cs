@@ -60,7 +60,7 @@ public abstract class ItemProcessor<T> : FieldHandler where T : BaseEntity, new(
     }
     protected abstract void onItenUpdated(char prev, char next, int row, int column);
 
-    protected void removeItem(T entity)
+    protected virtual void removeItem(T entity)
     {
         Object.Destroy(entity.transform.gameObject);
         entity.transform = null;

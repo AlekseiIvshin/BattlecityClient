@@ -42,7 +42,7 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
             if (values.MoveNext())
             {
                 var heroesData = values.Current["heroesData"];
-                var field = BattleField.to2Dimension(values.Current["board"]);
+                var field = MapUtils.to2Dimension(values.Current["board"]);
                 var fieldSize = field.Length;
                 var tanks = new Dictionary<string, TankData>();
                 TankData tank;
@@ -103,10 +103,10 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
             var keys = new Dictionary<char, string>();
             foreach( var val in node.Values)
             {
-                keys.Add(FieldItems.ALPHABET[index], val);
+                keys.Add(MapItems.ALPHABET[index], val);
                 index++;
             }
-            FieldItems.MAP_KEYS = keys;
+            MapItems.MAP_KEYS = keys;
             _stateVersion = 0;
             webSocket.Connect();
         }

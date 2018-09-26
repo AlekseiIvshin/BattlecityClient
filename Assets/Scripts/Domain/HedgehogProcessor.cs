@@ -17,7 +17,7 @@ public class HedgehogProcessor : ImmobileItemProcessor<Wall>
 
     private static List<string> _keys = new List<string>(new string[]
     {
-        FieldItems.KEY_HEDGEHOG,
+        MapItems.KEY_HEDGEHOG,
     });
 
     private string _symbols;

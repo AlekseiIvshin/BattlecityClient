@@ -8,18 +8,18 @@ public class TankProcessor : ItemProcessor<Tank>
 {
     private static List<string> _keys = new List<string>(new string[]
     {
-        FieldItems.KEY_TANK_UP,
-        FieldItems.KEY_OTHER_TANK_UP,
-        FieldItems.KEY_TANK_LEFT,
-        FieldItems.KEY_OTHER_TANK_LEFT,
-        FieldItems.KEY_TANK_RIGHT,
-        FieldItems.KEY_OTHER_TANK_RIGHT,
-        FieldItems.KEY_TANK_DOWN,
-        FieldItems.KEY_OTHER_TANK_DOWN,
+        MapItems.KEY_TANK_UP,
+        MapItems.KEY_OTHER_TANK_UP,
+        MapItems.KEY_TANK_LEFT,
+        MapItems.KEY_OTHER_TANK_LEFT,
+        MapItems.KEY_TANK_RIGHT,
+        MapItems.KEY_OTHER_TANK_RIGHT,
+        MapItems.KEY_TANK_DOWN,
+        MapItems.KEY_OTHER_TANK_DOWN,
     });
     private static List<string> _deadKeys = new List<string>(new string[]
     {
-        FieldItems.KEY_BANG,
+        MapItems.KEY_BANG,
     });
 
     private string _tankSymbols;
@@ -31,19 +31,19 @@ public class TankProcessor : ItemProcessor<Tank>
 
     public static int getLocalDirection(char symbol)
     {
-        switch (FieldItems.MAP_KEYS[symbol])
+        switch (MapItems.MAP_KEYS[symbol])
         {
-            case FieldItems.KEY_TANK_UP:
-            case FieldItems.KEY_OTHER_TANK_UP:
+            case MapItems.KEY_TANK_UP:
+            case MapItems.KEY_OTHER_TANK_UP:
                 return MapUtils.DIRECTION_UP;
-            case FieldItems.KEY_TANK_LEFT:
-            case FieldItems.KEY_OTHER_TANK_LEFT:
+            case MapItems.KEY_TANK_LEFT:
+            case MapItems.KEY_OTHER_TANK_LEFT:
                 return MapUtils.DIRECTION_LEFT;
-            case FieldItems.KEY_TANK_RIGHT:
-            case FieldItems.KEY_OTHER_TANK_RIGHT:
+            case MapItems.KEY_TANK_RIGHT:
+            case MapItems.KEY_OTHER_TANK_RIGHT:
                 return MapUtils.DIRECTION_RIGHT;
-            case FieldItems.KEY_TANK_DOWN:
-            case FieldItems.KEY_OTHER_TANK_DOWN:
+            case MapItems.KEY_TANK_DOWN:
+            case MapItems.KEY_OTHER_TANK_DOWN:
                 return MapUtils.DIRECTION_DOWN;
         }
 
@@ -119,7 +119,6 @@ public class TankProcessor : ItemProcessor<Tank>
     {
         var tank = base.createItem(symbol, row, column);
         tank.direction = getLocalDirection(symbol);
-        tank.characterController = tank.transform.gameObject.GetComponent<CharacterController>();
         return tank;
     }
 

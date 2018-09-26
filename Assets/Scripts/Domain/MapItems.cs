@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FieldItems
+public class MapItems
 {
     public static Dictionary<char, string> MAP_KEYS;
 
@@ -43,5 +43,16 @@ public class FieldItems
     public const string KEY_AI_TANK_DOWN = "ai_tank_down";
     public const string KEY_AI_TANK_LEFT = "ai_tank_left";
     public const string KEY_HEDGEHOG = "hedgehog";
+    public const string KEY_BONUS_AMMO = "bonus_ammo";
+    public const string KEY_MEDKIT = "medkit";
+    public const string KEY_BULLET_UP = "bullet_up";
+    public const string KEY_BULLET_RIGHT = "bullet_right";
+    public const string KEY_BULLET_DOWN = "bullet_down";
+    public const string KEY_BULLET_LEFT = "bullet_left";
+    public const string KEY_WORM_HOLE = "worm_hole";
+    public const string KEY_BOG = "bog";
+    public const string KEY_SAND = "sand";
+    public const string KEY_MOAT_HORIZONTAL = "moat_horizontal";
+    public const string KEY_MOAT_VERTICAL = "moat_vertical";
 
 }

@@ -9,16 +9,16 @@ public class BulletProcessor : ItemProcessor<Bullet>
 
     private static List<string> _keys = new List<string>(new string[]
     {
-        FieldItems.KEY_BULLET,
+        MapItems.KEY_BULLET,
     });
 
     private string _symbols;
 
     private static int getLocalDirection(char symbol)
     {
-        switch (FieldItems.MAP_KEYS[symbol])
+        switch (MapItems.MAP_KEYS[symbol])
         {
-            case FieldItems.KEY_BULLET:
+            case MapItems.KEY_BULLET:
                 return MapUtils.DIRECTION_UP;
         }
 
@@ -39,7 +39,7 @@ public class BulletProcessor : ItemProcessor<Bullet>
         }
 
 
-        Debug.Log("Bullet updated: '" + FieldItems.MAP_KEYS[prev[row][column]] + "' => '" + FieldItems.MAP_KEYS[next[row][column]] + "'");
+        Debug.Log("Bullet updated: '" + MapItems.MAP_KEYS[prev[row][column]] + "' => '" + MapItems.MAP_KEYS[next[row][column]] + "'");
         // Bullet was updated 
         if (canProcess(prev[row][column]))
         {
@@ -61,7 +61,7 @@ public class BulletProcessor : ItemProcessor<Bullet>
                     bullet.expectedPosition = MapUtils.getWorldPosition(_fieldSize, nextRow, nextColumn);
                     bullet.column = nextColumn;
                     bullet.row = nextRow;
-                    next[nextRow][nextColumn] = FieldItems.WITHOUT_CHANGES;
+                    next[nextRow][nextColumn] = MapItems.WITHOUT_CHANGES;
                     return;
                 }
             }

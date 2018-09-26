@@ -33,9 +33,9 @@ public class UndestroyableWallProcessor : ImmobileItemProcessor<UndestroyableWal
         }
     }
 
-    protected override string getPrefabPath()
+    protected override string getPrefabName()
     {
-        return "Assets/Prefabs/UndestroyableWall.prefab";
+        return "UndestroyableWall";
     }
 
     protected override void onItenUpdated(char prev, char next, int row, int column)

@@ -129,9 +129,9 @@ public class BulletProcessor : ItemProcessor<Bullet>
         Debug.Log("Bullet symbols are '" + _symbols + "'");
     }
 
-    protected override string getPrefabPath()
+    protected override string getPrefabName()
     {
-        return "Assets/Prefabs/Shell.prefab";
+        return "Shell";
     }
 
     protected override void onItenUpdated(char prev, char next, int row, int column)

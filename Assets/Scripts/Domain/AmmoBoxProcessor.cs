@@ -35,9 +35,9 @@ public class HedgehogProcessor : ImmobileItemProcessor<Wall>
         Debug.Log("Ammo box symbols are '" + _symbols + "'");
     }
 
-    protected override string getPrefabPath()
+    protected override string getPrefabName()
     {
-        return "Assets/Prefabs/AmmoBox.prefab";
+        return "AmmoBox.prefab";
     }
 
     protected override void onItenUpdated(char prev, char next, int row, int column)

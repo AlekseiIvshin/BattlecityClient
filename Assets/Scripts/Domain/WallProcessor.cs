@@ -111,9 +111,9 @@ public class WallProcessor : ImmobileItemProcessor<Wall>
         Debug.Log("Wall symbols are '" + _symbols + "'");
     }
 
-    protected override string getPrefabPath()
+    protected override string getPrefabName()
     {
-        return "Assets/Prefabs/Wall.prefab";
+        return "Wall";
     }
 
     protected override void onItenUpdated(char prev, char next, int row, int column)

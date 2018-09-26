@@ -183,9 +183,9 @@ public class TankProcessor : ItemProcessor<Tank>
         return null;
     }
 
-    protected override string getPrefabPath()
+    protected override string getPrefabName()
     {
-        return "Assets/Prefabs/Tank.prefab";
+        return "Tank";
     }
 
     protected override void onItenUpdated(char prev, char next, int row, int column)

@@ -19,7 +19,7 @@ public abstract class ItemProcessor<T> : FieldHandler where T : BaseEntity, new(
     public abstract bool canProcess(char symbol);
     public abstract void setMapKeys(Dictionary<char, string> keys);
 
-    protected abstract string getPrefabPath();
+    protected abstract string getPrefabName();
 
     public T findByPosition(int row, int column)
     {
@@ -86,7 +86,7 @@ public abstract class ItemProcessor<T> : FieldHandler where T : BaseEntity, new(
     {
         int entityId;
         GameObject unityObject = Object.Instantiate(
-            AssetDatabase.LoadAssetAtPath(getPrefabPath(), typeof(GameObject)),
+            Resources.Load("Prefabs/"+getPrefabName()) as GameObject,
             MapUtils.mapToWorld(row, column),
             getDirection(symbol)
         ) as GameObject;

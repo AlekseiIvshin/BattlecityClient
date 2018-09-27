@@ -4,7 +4,8 @@ using Leopotam.Ecs;
 using UnityEditor;
 using UnityEngine;
 
-public class UndestroyableWallProcessor : ImmobileItemProcessor<UndestroyableWall>
+// TODO: Deprected -> remove it
+public class UndestroyableWallProcessor : ImmobileItemProcessor<BattleWall>
 {
     private static List<string> _keys = new List<string>(new string[]
     {
@@ -13,7 +14,7 @@ public class UndestroyableWallProcessor : ImmobileItemProcessor<UndestroyableWal
 
     private string _symbols;
 
-    public UndestroyableWallProcessor(EcsWorld world, EcsFilter<UndestroyableWall> filter) : base(world, filter)
+    public UndestroyableWallProcessor(EcsWorld world, EcsFilter<BattleWall> filter) : base(world, filter)
     {
     }
 

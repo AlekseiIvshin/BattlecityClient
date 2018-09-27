@@ -48,19 +48,19 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
                 var fieldSize = field.Length;
                 var tanks = new Dictionary<string, TankData>();
                 TankData tank;
-                foreach(var tankNode in heroesData.Values)
+                foreach (var tankNode in heroesData.Values)
                 {
                     tank = new TankData();
                     var tankValue = tankNode.Values;
                     tankValue.MoveNext();
                     tank.column = tankValue.Current["coordinate"]["x"];
-                    tank.row = fieldSize - tankValue.Current["coordinate"]["y"] -1;
+                    tank.row = fieldSize - tankValue.Current["coordinate"]["y"] - 1;
                     tank.symbol = field[tank.row][tank.column];
                     var tankKey = tankNode.Keys;
                     tankKey.MoveNext();
                     tanks.Add(tankKey.Current, tank);
                 }
-                if (_gameState.Data.fieldSize!= fieldSize)
+                if (_gameState.Data.fieldSize != fieldSize)
                 {
                     _gameState.Data.fieldSize = fieldSize;
                 }
@@ -68,6 +68,7 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
                 {
                     field = field,
                     tanks = tanks,
+                    size = fieldSize
                 }, _stateVersion);
             }
         };
@@ -107,7 +108,7 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
             var node = JSON.Parse(request.downloadHandler.text);
             var index = 0;
             var keys = new Dictionary<char, string>();
-            foreach( var val in node.Values)
+            foreach (var val in node.Values)
             {
                 keys.Add(MapItems.ALPHABET[index], val);
                 index++;

@@ -2,6 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UndestroyableWall : BaseEntity
+public class BattleWall : BaseEntity
 {
 }

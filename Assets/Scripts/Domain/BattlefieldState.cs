@@ -6,4 +6,5 @@ public class BattlefieldState
 {
     public char[][] field;
     public Dictionary<string, TankData> tanks;
+    public int size;
 }

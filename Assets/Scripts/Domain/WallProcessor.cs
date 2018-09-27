@@ -5,6 +5,7 @@ using UnityEngine;
 using Leopotam.Ecs;
 using System.Text;
 
+// TODO: Deprected -> remove it
 public class WallProcessor : ImmobileItemProcessor<Wall>
 {
     public const int NOT_DESTROYED = 0;

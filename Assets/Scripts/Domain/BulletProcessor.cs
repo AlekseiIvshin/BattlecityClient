@@ -4,6 +4,7 @@ using Leopotam.Ecs;
 using UnityEditor;
 using UnityEngine;
 
+// TODO: Deprected -> remove it
 public class BulletProcessor : ItemProcessor<Bullet>
 {
 

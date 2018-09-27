@@ -7,6 +7,7 @@ public class MapItems
     public static Dictionary<char, string> MAP_KEYS;
 
     public static char WITHOUT_CHANGES = '#';
+    public static char OUTBOUNDS = '@';
 
     public const string ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
@@ -55,4 +56,48 @@ public class MapItems
     public const string KEY_MOAT_HORIZONTAL = "moat_horizontal";
     public const string KEY_MOAT_VERTICAL = "moat_vertical";
 
+    public const string PREFAB_WALL = "Wall";
+    public const string PREFAB_BATTLE_WALL = "BattleWall";
+    public const string PREFAB_TANK = "Tank";
+    public const string PREFAB_BULLET = "Shell";
+    public const string PREFAB_MEDKIT = "Medkit";
+    public const string PREFAB_AMMO_BOX = "AmmoBox";
+    public const string PREFAB_HEDGEHOG = "Hedgehog";
+
+    public static Dictionary<string, IEnumerable<string>> PREFAB_TO_KEYS = new Dictionary<string, IEnumerable<string>>
+    {
+        { PREFAB_BATTLE_WALL, new string[] {KEY_BATTLE_WALL} },
+        { PREFAB_BULLET, new string[] {KEY_BULLET} },
+        { PREFAB_HEDGEHOG, new string[] {KEY_HEDGEHOG} },
+        { PREFAB_AMMO_BOX, new string[] {KEY_BONUS_AMMO} },
+        { PREFAB_MEDKIT, new string[] {KEY_MEDKIT} },
+        {PREFAB_TANK, new string[]{
+            MapItems.KEY_TANK_UP,
+            MapItems.KEY_OTHER_TANK_UP,
+            MapItems.KEY_TANK_LEFT,
+            MapItems.KEY_OTHER_TANK_LEFT,
+            MapItems.KEY_TANK_RIGHT,
+            MapItems.KEY_OTHER_TANK_RIGHT,
+            MapItems.KEY_TANK_DOWN,
+            MapItems.KEY_OTHER_TANK_DOWN,
+        }},
+        { PREFAB_WALL, new string[] {
+            MapItems.KEY_CONSTRUCTION,
+            MapItems.KEY_CONSTRUCTION_DESTROYED_DOWN,
+            MapItems.KEY_CONSTRUCTION_DESTROYED_UP,
+            MapItems.KEY_CONSTRUCTION_DESTROYED_LEFT,
+            MapItems.KEY_CONSTRUCTION_DESTROYED_RIGHT,
+            MapItems.KEY_CONSTRUCTION_DESTROYED_DOWN_TWICE,
+            MapItems.KEY_CONSTRUCTION_DESTROYED_UP_TWICE,
+            MapItems.KEY_CONSTRUCTION_DESTROYED_LEFT_TWICE,
+            MapItems.KEY_CONSTRUCTION_DESTROYED_RIGHT_TWICE,
+            MapItems.KEY_CONSTRUCTION_DESTROYED_LEFT_RIGHT,
+            MapItems.KEY_CONSTRUCTION_DESTROYED_UP_DOWN,
+            MapItems.KEY_CONSTRUCTION_DESTROYED_UP_LEFT,
+            MapItems.KEY_CONSTRUCTION_DESTROYED_RIGHT_UP,
+            MapItems.CONSTRUCTION_DESTROYED_DOWN_LEFT,
+            MapItems.KEY_CONSTRUCTION_DESTROYED_DOWN_RIGHT,
+            MapItems.KEY_CONSTRUCTION_DESTROYED,
+        }}
+    };
 }

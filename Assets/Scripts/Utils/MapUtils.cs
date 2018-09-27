@@ -23,6 +23,11 @@ public class MapUtils {
         return new Vector3(row * tileSize + tileSize / 2, 0, column * tileSize + tileSize / 2);
     }
 
+    public static Vector3 mapToWorld(MapItem item)
+    {
+        return new Vector3(item.row * tileSize + tileSize / 2, 0, item.column * tileSize + tileSize / 2);
+    }
+
     public static Vector3 getWorldDelta(int row, int column)
     {
         return new Vector3(row * tileSize, 0, column * tileSize);
@@ -82,5 +87,26 @@ public class MapUtils {
             }
         }
         return field;
+    }
+
+
+    public static int getBulletDirection(char symbol)
+    {
+        switch (MapItems.MAP_KEYS[symbol])
+        {
+            case MapItems.KEY_BULLET:
+                return MapUtils.DIRECTION_UP;
+        }
+
+        // TODO: FIX IT: remove default value
+        return MapUtils.DIRECTION_UP;
+        //throw new System.Exception("No direction for '" + symbol + "'");
+    }
+
+    public static bool getCoordinatesWithDelta(int fieldSize, int row, int column, PositionDelta posDelta, out int nextRow, out int nextColumn)
+    {
+        nextRow = row + posDelta.rowDelta;
+        nextColumn = column + posDelta.columnDelta;
+        return (nextRow >= 0 && nextRow < fieldSize && nextColumn >= 0 && nextColumn < fieldSize);
     }
 }

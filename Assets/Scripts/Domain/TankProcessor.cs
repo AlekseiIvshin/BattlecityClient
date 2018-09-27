@@ -122,7 +122,7 @@ public class TankProcessor : ItemProcessor<Tank>
         return tank;
     }
 
-    public void initTanks(Dictionary<string, TankData> tanks)
+    public void initTanks(Dictionary<string, MapItem> tanks)
     {
         foreach (var tankName in tanks.Keys)
         {
@@ -130,7 +130,7 @@ public class TankProcessor : ItemProcessor<Tank>
         }
     }
 
-    public void onUpdate(Dictionary<string, TankData> tanks)
+    public void onUpdate(Dictionary<string, MapItem> tanks)
     {
         Tank tank;
         int moveByRow;

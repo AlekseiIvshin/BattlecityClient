@@ -12,9 +12,17 @@ using System.Threading;
 [EcsInject]
 public class DataSystem : IEcsInitSystem, IEcsRunSystem
 {
-    const string KEYS_URL = "http://codenjoy.juja.com.ua/codenjoy-contest/rest/sprites/battlecity";
-    const string SERVER_URL = "ws://codenjoy.juja.com.ua/codenjoy-contest/screen-ws?user=test@test.com&code=20998118591535248716";
     const string MESSAGE = "{name: 'getScreen', allPlayersScreen: true, gameName:'battlecity'}";
+
+
+    public static string getServerAddress()
+    {
+        return "ws://" + ClientState.serverAddress + "screen-ws?user=test@test.com&code=20998118591535248716";
+    }
+    public static string getKeysAddress()
+    {
+        return "http://" + ClientState.serverAddress + "rest/sprites/battlecity";
+    }
 
     EcsFilterSingle<SharedGameState> _gameState = null;
 
@@ -29,13 +37,11 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
 
     WebSocket webSocket;
 
-    const int MESSAGES_INTERVAL = 1000;
-
     long nextExchange = -1;
 
     void IEcsInitSystem.Initialize()
     {
-        webSocket = new WebSocket(SERVER_URL);
+        webSocket = new WebSocket(getServerAddress());
         webSocket.OnMessage += (sender, e) =>
         {
             _stateVersion++;
@@ -46,11 +52,11 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
                 var heroesData = values.Current["heroesData"];
                 var field = MapUtils.to2Dimension(values.Current["board"]);
                 var fieldSize = field.Length;
-                var tanks = new Dictionary<string, TankData>();
-                TankData tank;
+                var tanks = new Dictionary<string, MapItem>();
+                MapItem tank;
                 foreach (var tankNode in heroesData.Values)
                 {
-                    tank = new TankData();
+                    tank = new MapItem();
                     var tankValue = tankNode.Values;
                     tankValue.MoveNext();
                     tank.column = tankValue.Current["coordinate"]["x"];
@@ -88,14 +94,14 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
     {
         if (webSocket.IsConnected && nextExchange <= DateTime.Now.Ticks)
         {
-            nextExchange = DateTime.Now.Ticks + MESSAGES_INTERVAL;
+            nextExchange = DateTime.Now.Ticks + ClientState.tickTime;
             webSocket.Send(MESSAGE);
         }
     }
 
     private IEnumerator getFieldMapping()
     {
-        var request = UnityWebRequest.Get(KEYS_URL);
+        var request = UnityWebRequest.Get(getKeysAddress());
         yield return request.SendWebRequest();
 
         if (request.isNetworkError || request.isHttpError)

@@ -18,13 +18,13 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
     EcsFilter<Bullet> _bulletsFilter = null;
     EcsFilter<Medkit> _medkitFilter = null;
     EcsFilter<AmmoBox> _ammoBoxFilter = null;
+    EcsFilter<Hedgehog> _hedgehogFilter = null;
 
     private int _gameState = GAME_WAIT_FOR_DATA;
     private int _fieldSize;
 
     TankProcessor tanksProcessor;
 
-    List<FieldHandler> fieldHandlers = new List<FieldHandler>();
     List<IUpdatesApplier> updatesHandlers = new List<IUpdatesApplier>();
     private Dictionary<char, string> _mapKeys;
 
@@ -67,10 +67,15 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
                 MapItems.PREFAB_TO_KEYS[MapItems.PREFAB_AMMO_BOX]
             )
         );
+        updatesHandlers.Add(
+            new MapItemProcessor<Hedgehog>(
+                new ItemManagerDelegate<Hedgehog>(_world, _hedgehogFilter, MapItems.PREFAB_HEDGEHOG),
+                new UpdatesHandler(),
+                MapItems.PREFAB_TO_KEYS[MapItems.PREFAB_HEDGEHOG]
+            )
+        );
 
         tanksProcessor = new TankProcessor(_world, _tanksFilter);
-        //fieldHandlers.Add(new WallProcessor(_world, _wallsFilter));
-        //fieldHandlers.Add(new BulletProcessor(_world, _bulletsFilter));
         GameStateEventManager.getInstance().subscribe(this);
     }
 
@@ -88,7 +93,6 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
             _fieldSize = _states[0].field.Length;
             tanksProcessor.setMapKeys(MapItems.MAP_KEYS);
             tanksProcessor.initTanks(_states[0].tanks);
-            initBattlefield(_states[0].field);
             initBattlefield(_states[0]);
         }
         else if (_states.Count > 1)
@@ -98,7 +102,6 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
             _states.RemoveAt(0);
             Debug.Log("UPDATE!");
             //tanksProcessor.onUpdate(_nextState.tanks);
-            handleUpdates(_prevState.field, _nextState.field);
 
             handleUpdates(_prevState, _nextState);
 
@@ -112,25 +115,6 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
     public void onUpdate(BattlefieldState state, long version)
     {
         _states.Add(state);
-    }
-
-    private void initBattlefield(char[][] field)
-    {
-        foreach (var handler in fieldHandlers)
-        {
-            handler.setMapKeys(MapItems.MAP_KEYS);
-            handler.setFieldSize(_fieldSize);
-        }
-        for (var i = 0; i < field.Length; i++)
-        {
-            for (var j = 0; j < field[i].Length; j++)
-            {
-                foreach (var handler in fieldHandlers)
-                {
-                    handler.initItem(field[i][j], i, j);
-                }
-            }
-        }
     }
 
     private void initBattlefield(BattlefieldState state)
@@ -148,31 +132,6 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
                 foreach (var handler in updatesHandlers)
                 {
                     handler.initItem(state, i, j);
-                }
-            }
-        }
-    }
-
-    private void handleUpdates(char[][] prevBattlefield, char[][] newBattlefield)
-    {
-        char[][] prev;
-        char[][] next;
-
-        getChanges(prevBattlefield, newBattlefield, out prev, out next);
-
-        for (var i = 0; i < _fieldSize; i++)
-        {
-            for (var j = 0; j < _fieldSize; j++)
-            {
-                if (prev[i][j] != MapItems.WITHOUT_CHANGES || next[i][j] != MapItems.WITHOUT_CHANGES)
-                {
-                    foreach (var handler in fieldHandlers)
-                    {
-                        if (handler.canProcess(prev[i][j]) || (handler.canProcess(next[i][j])))
-                        {
-                            handler.onFieldUpdates(prev, next, i, j);
-                        }
-                    }
                 }
             }
         }

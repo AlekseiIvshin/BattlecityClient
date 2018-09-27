@@ -98,7 +98,7 @@ public class MainCameraSystem : IEcsInitSystem, IEcsRunSystem
         }
         cameraContainer.transform.Translate(cameraContainer.transform.up * (-offset), Space.World);
         Vector3 pos = cameraContainer.transform.position;
-        pos.y = Mathf.Clamp(cameraContainer.transform.position.y, 0, _gameState.Data.fieldSize);
+        pos.y = Mathf.Clamp(cameraContainer.transform.position.y, -7, _gameState.Data.fieldSize);
         cameraContainer.transform.position = pos;
     }
 

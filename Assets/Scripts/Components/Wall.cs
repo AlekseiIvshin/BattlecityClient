@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class Wall : BaseEntity
 {
-    public int destroyed = WallProcessor.NOT_DESTROYED;
+    public int destroyed;
 }

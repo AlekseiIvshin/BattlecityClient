@@ -5,7 +5,7 @@ using UnityEngine;
 using Leopotam.Ecs;
 using System.Text;
 
-public class AmmoBoxProcessor : ImmobileItemProcessor<Wall>
+public class HedgehogProcessor : ImmobileItemProcessor<Hedgehog>
 {
 
     private static List<string> _keys = new List<string>(new string[]
@@ -15,7 +15,7 @@ public class AmmoBoxProcessor : ImmobileItemProcessor<Wall>
 
     private string _symbols;
 
-    public AmmoBoxProcessor(EcsWorld world, EcsFilter<Wall> filter) : base(world, filter)
+    public HedgehogProcessor(EcsWorld world, EcsFilter<Hedgehog> filter) : base(world, filter)
     {
     }
 

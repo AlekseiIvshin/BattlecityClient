@@ -5,16 +5,17 @@ using UnityEngine;
 using Leopotam.Ecs;
 using System.Text;
 
-public class AmmoBoxProcessor : ImmobileItemProcessor<AmmoBox>
+public class MedkitProcessor : ImmobileItemProcessor<Medkit>
 {
+
     private static List<string> _keys = new List<string>(new string[]
     {
-        MapItems.KEY_BONUS_AMMO,
+        MapItems.KEY_MEDKIT,
     });
 
     private string _symbols;
 
-    public AmmoBoxProcessor(EcsWorld world, EcsFilter<AmmoBox> filter) : base(world, filter)
+    public MedkitProcessor(EcsWorld world, EcsFilter<Medkit> filter) : base(world, filter)
     {
     }
 
@@ -32,12 +33,12 @@ public class AmmoBoxProcessor : ImmobileItemProcessor<AmmoBox>
                 _symbols += key;
             }
         }
-        Debug.Log("Ammo box symbols are '" + _symbols + "'");
+        Debug.Log("Medkit symbols are '" + _symbols + "'");
     }
 
     protected override string getPrefabName()
     {
-        return "AmmoBox.prefab";
+        return "Medkit";
     }
 
     protected override void onItenUpdated(char prev, char next, int row, int column)

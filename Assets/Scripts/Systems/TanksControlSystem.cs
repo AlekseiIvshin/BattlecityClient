@@ -7,9 +7,6 @@ public class TanksControlSystem : IEcsInitSystem, IEcsRunSystem
     EcsWorld _world = null;
     EcsFilter<Tank> _tanksFilter = null;
 
-    private const float rotationSpeed = 50f;
-    private const float movementSpeed = 2f;
-
     void IEcsInitSystem.Initialize()
     {
     }
@@ -18,6 +15,8 @@ public class TanksControlSystem : IEcsInitSystem, IEcsRunSystem
 
     void IEcsRunSystem.Run()
     {
+        var movementSpeed = Time.deltaTime * 1000 * MapUtils.tileSize / ClientState.tickTime * 3;
+        var rotationSpeed = 1000f;// Time.deltaTime * 1000 / ClientState.tickTime * 3;
         for (var index = 0; index < _tanksFilter.EntitiesCount; index++)
         {
             var tank = _tanksFilter.Components1[index];
@@ -41,8 +40,7 @@ public class TanksControlSystem : IEcsInitSystem, IEcsRunSystem
                     }
                     else
                     {
-                        float step = movementSpeed * Time.deltaTime;
-                        tank.transform.position = Vector3.MoveTowards(tank.transform.position, tank.deltas[0].positionTarget,step);
+                        tank.transform.position = Vector3.MoveTowards(tank.transform.position, tank.deltas[0].positionTarget, movementSpeed);
                     }
                 }
             }

@@ -23,12 +23,12 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
     private int _gameState = GAME_WAIT_FOR_DATA;
     private int _fieldSize;
 
-    TankProcessor tanksProcessor;
-
     List<IUpdatesApplier> updatesHandlers = new List<IUpdatesApplier>();
     private Dictionary<char, string> _mapKeys;
 
     private List<BattlefieldState> _states = new List<BattlefieldState>();
+
+    private TankItemProcessor _tanksProcessor;
 
     void IEcsInitSystem.Initialize()
     {
@@ -55,27 +55,32 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
         );
         updatesHandlers.Add(
             new MapItemProcessor<Medkit>(
-                new ItemManagerDelegate<Medkit>(_world, _medkitFilter, MapItems.PREFAB_MEDKIT),
+                new SelectableManagerDelegate<Medkit>(_world, _medkitFilter, MapItems.PREFAB_MEDKIT),
                 new UpdatesHandler(),
                 MapItems.PREFAB_TO_KEYS[MapItems.PREFAB_MEDKIT]
             )
         );
         updatesHandlers.Add(
             new MapItemProcessor<AmmoBox>(
-                new ItemManagerDelegate<AmmoBox>(_world, _ammoBoxFilter, MapItems.PREFAB_AMMO_BOX),
+                new SelectableManagerDelegate<AmmoBox>(_world, _ammoBoxFilter, MapItems.PREFAB_AMMO_BOX),
                 new UpdatesHandler(),
                 MapItems.PREFAB_TO_KEYS[MapItems.PREFAB_AMMO_BOX]
             )
         );
         updatesHandlers.Add(
             new MapItemProcessor<Hedgehog>(
-                new ItemManagerDelegate<Hedgehog>(_world, _hedgehogFilter, MapItems.PREFAB_HEDGEHOG),
+                new ObstacleManagerDelegate<Hedgehog>(_world, _hedgehogFilter, MapItems.PREFAB_HEDGEHOG),
                 new UpdatesHandler(),
                 MapItems.PREFAB_TO_KEYS[MapItems.PREFAB_HEDGEHOG]
             )
         );
+        _tanksProcessor = 
+            new TankItemProcessor(
+                new TanksManagerDelegate(_world, _tanksFilter, MapItems.PREFAB_TANK),
+                new TanksUpdateHandler(),
+                MapItems.PREFAB_TO_KEYS[MapItems.PREFAB_TANK]
+        );
 
-        tanksProcessor = new TankProcessor(_world, _tanksFilter);
         GameStateEventManager.getInstance().subscribe(this);
     }
 
@@ -91,8 +96,7 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
             Debug.Log("INIT!");
             _gameState = GAME_STARTED;
             _fieldSize = _states[0].field.Length;
-            tanksProcessor.setMapKeys(MapItems.MAP_KEYS);
-            tanksProcessor.initTanks(_states[0].tanks);
+            _tanksProcessor.initItems(_states[0]);
             initBattlefield(_states[0]);
         }
         else if (_states.Count > 1)
@@ -101,14 +105,13 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
             var _prevState = _states[0];
             _states.RemoveAt(0);
             Debug.Log("UPDATE!");
-            //tanksProcessor.onUpdate(_nextState.tanks);
-
             handleUpdates(_prevState, _nextState);
-
             foreach (var handler in updatesHandlers)
             {
                 handler.applyUpdates();
             }
+            _tanksProcessor.accumulateUpdates(_prevState, _nextState);
+            _tanksProcessor.applyUpdates();
         }
     }
 
@@ -124,6 +127,7 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
         {
             handler.setSymbols(symbols[handler.prefabName()]);
         }
+        _tanksProcessor.setSymbols(symbols[_tanksProcessor.prefabName()]);
 
         for (var i = 0; i < state.field.Length; i++)
         {

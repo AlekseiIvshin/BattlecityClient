@@ -121,6 +121,28 @@ public class MapUtils {
         throw new System.Exception("No direction for '" + symbol + "'");
     }
 
+
+    public static int getTankDirection(char symbol)
+    {
+        switch (MapItems.MAP_KEYS[symbol])
+        {
+            case MapItems.KEY_TANK_UP:
+            case MapItems.KEY_OTHER_TANK_UP:
+                return MapUtils.DIRECTION_UP;
+            case MapItems.KEY_TANK_LEFT:
+            case MapItems.KEY_OTHER_TANK_LEFT:
+                return MapUtils.DIRECTION_LEFT;
+            case MapItems.KEY_TANK_RIGHT:
+            case MapItems.KEY_OTHER_TANK_RIGHT:
+                return MapUtils.DIRECTION_RIGHT;
+            case MapItems.KEY_TANK_DOWN:
+            case MapItems.KEY_OTHER_TANK_DOWN:
+                return MapUtils.DIRECTION_DOWN;
+        }
+
+        throw new System.Exception("No direction for '" + symbol + "'");
+    }
+
     public static bool getCoordinatesWithDelta(int fieldSize, int row, int column, PositionDelta posDelta, out int nextRow, out int nextColumn)
     {
         nextRow = row + posDelta.rowDelta;

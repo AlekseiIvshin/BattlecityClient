@@ -18,8 +18,6 @@ public class BulletManagerDelegate : ItemManagerDelegate<Bullet>
     {
         var bullet = base.createItem(item);
         bullet.direction = MapUtils.getBulletDirection(item.symbol);
-        //var rigidbody = bullet.transform.GetComponent<Rigidbody>();
-        //rigidbody.velocity = MapUtils.getBulletVectorDirection(item.symbol);
         return bullet;
     }
 

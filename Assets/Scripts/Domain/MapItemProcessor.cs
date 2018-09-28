@@ -48,7 +48,7 @@ public class MapItemProcessor<T>: IUpdatesApplier where T : BaseEntity, new()
         this._accumulator.accumulateUpdates(prev, next, row, column);
     }
 
-    public void initItem(BattlefieldState state, int row, int column)
+    public virtual void initItem(BattlefieldState state, int row, int column)
     {
         if (canProcess(state.field[row][column]))
         {

@@ -9,10 +9,11 @@ public class BulletControlSystem : IEcsInitSystem, IEcsRunSystem, ObjectDestroyE
     EcsFilter<Bullet> _bulletsFilter = null;
     List<int> _bulletsToDestroy = new List<int>();
 
-    private const float movementSpeed = 2f;
+    private float _movementSpeed = 0;
 
     void IEcsInitSystem.Initialize()
     {
+        _movementSpeed = MapUtils.tileSize * 2 / ClientState.tickTime * 1000;
         ObjectDestroyEventManager.getInstance().subscribe(this);
     }
 
@@ -23,12 +24,6 @@ public class BulletControlSystem : IEcsInitSystem, IEcsRunSystem, ObjectDestroyE
 
     void IEcsRunSystem.Run()
     {
-        for (var index = 0; index < _bulletsFilter.EntitiesCount; index++)
-        {
-            var bullet = _bulletsFilter.Components1[index];
-            bullet.transform.position = Vector3.MoveTowards(bullet.transform.position, bullet.expectedPosition, movementSpeed * Time.deltaTime);
-        }
-
         if (_bulletsToDestroy.Count>0)
         {
 
@@ -43,11 +38,22 @@ public class BulletControlSystem : IEcsInitSystem, IEcsRunSystem, ObjectDestroyE
                         Object.Destroy(bullet.transform.gameObject);
                     }
                     bullet.transform = null;
+                    Debug.Log("Bullet was destroyed: " + bullet.entityId + ", ('" + bullet.row + "','" + bullet.column + "')");
                     _world.RemoveEntity(bullet.entityId);
                     break;
                 }
             }
             _bulletsToDestroy.Clear();
+        }
+
+        Bullet updateBullet;
+        for (var i = 0; i < _bulletsFilter.EntitiesCount; i++)
+        {
+            updateBullet = _bulletsFilter.Components1[i];
+            if (updateBullet.transform != null)
+            {
+                updateBullet.transform.Translate(Vector3.forward * Time.deltaTime * 1000 * MapUtils.tileSize * 2/ ClientState.tickTime);
+            }
         }
     }
 

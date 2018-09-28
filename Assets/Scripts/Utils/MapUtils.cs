@@ -89,7 +89,6 @@ public class MapUtils {
         return field;
     }
 
-
     public static int getBulletDirection(char symbol)
     {
         switch (MapItems.MAP_KEYS[symbol])
@@ -102,6 +101,22 @@ public class MapUtils {
                 return MapUtils.DIRECTION_DOWN;
             case MapItems.KEY_BULLET_LEFT:
                 return MapUtils.DIRECTION_LEFT;
+        }
+        throw new System.Exception("No direction for '" + symbol + "'");
+    }
+
+    public static Vector3 getBulletVectorDirection(char symbol)
+    {
+        switch (MapItems.MAP_KEYS[symbol])
+        {
+            case MapItems.KEY_BULLET_UP:
+                return Vector3.forward;
+            case MapItems.KEY_BULLET_RIGHT:
+                return Vector3.right;
+            case MapItems.KEY_BULLET_DOWN:
+                return -Vector3.forward;
+            case MapItems.KEY_BULLET_LEFT:
+                return -Vector3.right;
         }
         throw new System.Exception("No direction for '" + symbol + "'");
     }

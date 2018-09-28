@@ -18,34 +18,17 @@ public class BulletManagerDelegate : ItemManagerDelegate<Bullet>
     {
         var bullet = base.createItem(item);
         bullet.direction = MapUtils.getBulletDirection(item.symbol);
-        var positionDelta = MapUtils.calculatePositionDelta(bullet.direction, 2);
-        bullet.expectedPosition = MapUtils.mapToWorld(item.row + positionDelta.rowDelta, item.column + positionDelta.columnDelta);
+        //var rigidbody = bullet.transform.GetComponent<Rigidbody>();
+        //rigidbody.velocity = MapUtils.getBulletVectorDirection(item.symbol);
         return bullet;
     }
 
     public override bool updateItem(MapItem prev, MapItem next)
     {
-        Debug.Log("Update bullet: prev " + prev + "; next " + next);
-        if (next.symbol == MapItems.OUTBOUNDS)
-        {
-            destroyItem(prev.row, prev.column);
-            return true;
-        }
-        if (canProcess(next.symbol) && canProcess(prev.symbol) && next.symbol != prev.symbol)
+        if (!canProcess(prev.symbol) && canProcess(next.symbol))
         {
             createItem(next);
-            destroyItem(prev.row, prev.column);
-            return true;
         }
-        var bullet = findByPosition(prev.row, prev.column);
-        if (bullet != null)
-        {
-            bullet.expectedPosition = MapUtils.mapToWorld(next.row, next.column);
-            bullet.column = next.column;
-            bullet.row = next.row;
-            return true;
-        }
-        createItem(next);
 
         // Case when prev is bullet and next is not, handled via colliders and ObjectDestroyEventManager
         return true;

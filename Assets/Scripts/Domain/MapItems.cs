@@ -30,7 +30,6 @@ public class MapItems
     public const string CONSTRUCTION_DESTROYED_DOWN_LEFT = "construction_destroyed_down_left";
     public const string KEY_CONSTRUCTION_DESTROYED_DOWN_RIGHT = "construction_destroyed_down_right";
     public const string KEY_CONSTRUCTION_DESTROYED = "construction_destroyed";
-    public const string KEY_BULLET = "bullet";
     public const string KEY_TANK_UP = "tank_up";
     public const string KEY_TANK_RIGHT = "tank_right";
     public const string KEY_TANK_DOWN = "tank_down";
@@ -67,7 +66,7 @@ public class MapItems
     public static Dictionary<string, IEnumerable<string>> PREFAB_TO_KEYS = new Dictionary<string, IEnumerable<string>>
     {
         { PREFAB_BATTLE_WALL, new string[] {KEY_BATTLE_WALL} },
-        { PREFAB_BULLET, new string[] {KEY_BULLET} },
+        { PREFAB_BULLET, new string[] { KEY_BULLET_UP , KEY_BULLET_DOWN, KEY_BULLET_RIGHT, KEY_BULLET_LEFT} },
         { PREFAB_HEDGEHOG, new string[] {KEY_HEDGEHOG} },
         { PREFAB_AMMO_BOX, new string[] {KEY_BONUS_AMMO} },
         { PREFAB_MEDKIT, new string[] {KEY_MEDKIT} },

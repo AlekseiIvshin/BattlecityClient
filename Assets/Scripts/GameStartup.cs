@@ -33,7 +33,7 @@ public class GameStartup : MonoBehaviour
 #endif
     }
 
-    void Update()
+    private void FixedUpdate()
     {
         _systems.Run();
     }

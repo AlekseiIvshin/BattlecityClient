@@ -95,10 +95,9 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
 
     void IEcsRunSystem.Run()
     {
-        Debug.Log(Time.realtimeSinceStartup);
         if (webSocket.IsConnected && nextExchange <= Time.realtimeSinceStartup)
         {
-            nextExchange = Time.realtimeSinceStartup + ClientState.tickTime /1000;
+            nextExchange = Time.realtimeSinceStartup + ClientState.tickTime / 1000;
             webSocket.Send(MESSAGE);
         }
     }

@@ -151,38 +151,6 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
         }
     }
 
-    private static void getChanges(char[][] prevBattlefield, char[][] newBattlefield, out char[][] prev, out char[][] next)
-    {
-        prev = deepClone(prevBattlefield);
-        next = deepClone(newBattlefield);
-        var fieldSize = prevBattlefield.Length;
-        for (var i = 0; i < fieldSize; i++)
-        {
-            for (var j = 0; j < fieldSize; j++)
-            {
-                if (prev[i][j] == next[i][j])
-                {
-                    prev[i][j] = MapItems.WITHOUT_CHANGES;
-                    next[i][j] = MapItems.WITHOUT_CHANGES;
-                }
-            }
-        }
-    }
-
-    private static char[][] deepClone(char[][] source)
-    {
-        var res = new char[source.Length][];
-        for (var i = 0; i < source.Length; i++)
-        {
-            res[i] = new char[source[i].Length];
-            for (var j = 0; j < source[i].Length; j++)
-            {
-                res[i][j] = source[i][j];
-            }
-        }
-        return res;
-    }
-
     private static Dictionary<string, string> generateSymbols(Dictionary<char, string> mapKeys)
     {
         var map = new Dictionary<string, string>();

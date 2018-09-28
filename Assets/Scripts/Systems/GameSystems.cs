@@ -59,14 +59,14 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
         );
         updatesHandlers.Add(
             new MapItemProcessor<Medkit>(
-                new SelectableManagerDelegate<Medkit>(_world, _medkitFilter, MapItems.PREFAB_MEDKIT),
+                new PickUpManagerDelegate<Medkit>(_world, _medkitFilter, MapItems.PREFAB_MEDKIT),
                 new UpdatesHandler(),
                 MapItems.PREFAB_TO_KEYS[MapItems.PREFAB_MEDKIT]
             )
         );
         updatesHandlers.Add(
             new MapItemProcessor<AmmoBox>(
-                new SelectableManagerDelegate<AmmoBox>(_world, _ammoBoxFilter, MapItems.PREFAB_AMMO_BOX),
+                new PickUpManagerDelegate<AmmoBox>(_world, _ammoBoxFilter, MapItems.PREFAB_AMMO_BOX),
                 new UpdatesHandler(),
                 MapItems.PREFAB_TO_KEYS[MapItems.PREFAB_AMMO_BOX]
             )

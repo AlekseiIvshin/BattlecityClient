@@ -2,7 +2,7 @@
 using UnityEditor;
 using Leopotam.Ecs;
 
-public class ItemManagerDelegate<T> where T : BaseEntity, new()
+public class ItemManagerDelegate<T>: IItemManagerDelegate<T> where T : BaseEntity, new()
 {
     private EcsWorld _world;
     protected EcsFilter<T> _filter;

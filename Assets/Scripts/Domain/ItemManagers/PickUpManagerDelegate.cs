@@ -2,10 +2,10 @@
 using UnityEditor;
 using Leopotam.Ecs;
 
-public class SelectableManagerDelegate<T>: ItemManagerDelegate<T> where T : BaseEntity, new()
+public class PickUpManagerDelegate<T>: ItemManagerDelegate<T> where T : BaseEntity, new()
 {
 
-    public SelectableManagerDelegate(EcsWorld world, EcsFilter<T> filter, string prefabName) : base(world, filter, prefabName)
+    public PickUpManagerDelegate(EcsWorld world, EcsFilter<T> filter, string prefabName) : base(world, filter, prefabName)
     {
     }
 

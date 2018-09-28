@@ -2,7 +2,7 @@
 using UnityEditor;
 using Leopotam.Ecs;
 
-public class MoatManagerDelegate: ItemManagerDelegate<Moat>
+public class MoatManagerDelegate: ObstacleManagerDelegate<Moat>
 {
 
     public MoatManagerDelegate(EcsWorld world, EcsFilter<Moat> filter, string prefabName) : base(world, filter, prefabName)

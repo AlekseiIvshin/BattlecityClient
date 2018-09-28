@@ -8,11 +8,11 @@ using System.Text;
 public class MapItemProcessor<T>: IUpdatesApplier where T : BaseEntity, new()
 {
     private List<string> _itemKeys;
-    private ItemManagerDelegate<T> _itemManagerDelegate;
+    private IItemManagerDelegate<T> _itemManagerDelegate;
     private IUpdatesAccumulator _accumulator;
     private string _symbols;
 
-    public MapItemProcessor(ItemManagerDelegate<T> itemManagerDelegate, IUpdatesAccumulator accumulator, IEnumerable<string> itemKeys)
+    public MapItemProcessor(IItemManagerDelegate<T> itemManagerDelegate, IUpdatesAccumulator accumulator, IEnumerable<string> itemKeys)
     {
         this._itemKeys = new List<string>(itemKeys);
         this._itemManagerDelegate = itemManagerDelegate;

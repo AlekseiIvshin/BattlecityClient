@@ -99,4 +99,29 @@ public class MapItems
             MapItems.KEY_CONSTRUCTION_DESTROYED,
         }}
     };
+
+    public static bool doesSymbolBelongToItem(char symbol, string prefab)
+    {
+        var prefabItems = PREFAB_TO_KEYS[prefab];
+        var mapKey = MAP_KEYS[symbol];
+        foreach (var prefabItem in prefabItems)
+        {
+            if (prefabItem == mapKey)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static bool doesSymbolBelongToItems(char symbol, string[] prefabs)
+    {
+        foreach(var prefab in prefabs)
+        {
+            if (doesSymbolBelongToItem(symbol, prefab)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

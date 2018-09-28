@@ -4,8 +4,9 @@ using UnityEngine;
 [EcsInject]
 public class TanksControlSystem : IEcsInitSystem, IEcsRunSystem
 {
-    EcsWorld _world = null;
     EcsFilter<Tank> _tanksFilter = null;
+
+    const int actionsPerStep = 3;
 
     void IEcsInitSystem.Initialize()
     {
@@ -15,8 +16,8 @@ public class TanksControlSystem : IEcsInitSystem, IEcsRunSystem
 
     void IEcsRunSystem.Run()
     {
-        var movementSpeed = Time.deltaTime * 1000 * MapUtils.tileSize / ClientState.tickTime * 3;
-        var rotationSpeed = 1000f;// Time.deltaTime * 1000 / ClientState.tickTime * 3;
+        var movementSpeed = Time.deltaTime * 1000 * MapUtils.tileSize / ClientState.tickTime * actionsPerStep;
+        var rotationSpeed = Time.deltaTime * 1000 * 180 / ClientState.tickTime * actionsPerStep;
         for (var index = 0; index < _tanksFilter.EntitiesCount; index++)
         {
             var tank = _tanksFilter.Components1[index];
@@ -29,8 +30,7 @@ public class TanksControlSystem : IEcsInitSystem, IEcsRunSystem
                         tank.deltas.RemoveAt(0);
                     } else
                     {
-                        float step = rotationSpeed * Time.deltaTime;
-                        tank.transform.rotation = Quaternion.RotateTowards(tank.transform.rotation, tank.deltas[0].rotationTarget, step);
+                        tank.transform.rotation = Quaternion.RotateTowards(tank.transform.rotation, tank.deltas[0].rotationTarget, rotationSpeed);
                     }
                 } else
                 {

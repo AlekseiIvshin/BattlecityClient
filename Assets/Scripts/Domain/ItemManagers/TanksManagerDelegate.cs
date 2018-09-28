@@ -80,11 +80,18 @@ public class TanksManagerDelegate : ItemManagerDelegate<Tank>
         int movementDirection;
         if (moveByColumn != 0 || moveByRow != 0)
         {
-            movementDirection = getDirectionForMovement(moveByRow, -moveByColumn, rotateBy);
-            tank.deltas.Add(TankDelta.rotateToDirection(movementDirection));
-            tank.deltas.Add(TankDelta.moveTo(MapUtils.mapToWorld(next.row, next.column)));
-            tank.row = next.row;
-            tank.column = next.column;
+            if (Mathf.Abs(moveByColumn) > 1 || Mathf.Abs(moveByRow) > 1)
+            {
+                tank.deltas.Add(TankDelta.teleportTo(MapUtils.mapToWorld(next.row, next.column)));
+            }
+            else
+            {
+                movementDirection = getDirectionForMovement(moveByRow, -moveByColumn, rotateBy);
+                tank.deltas.Add(TankDelta.rotateToDirection(movementDirection));
+                tank.deltas.Add(TankDelta.moveTo(MapUtils.mapToWorld(next.row, next.column)));
+                tank.row = next.row;
+                tank.column = next.column;
+            }
         }
         tank.deltas.Add(TankDelta.rotateToDirection(MapUtils.getTankDirection(next.symbol)));
         return true;

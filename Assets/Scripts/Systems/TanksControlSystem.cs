@@ -32,7 +32,12 @@ public class TanksControlSystem : IEcsInitSystem, IEcsRunSystem
                     {
                         tank.transform.rotation = Quaternion.RotateTowards(tank.transform.rotation, tank.deltas[0].rotationTarget, rotationSpeed);
                     }
-                } else
+                } else if (tank.deltas[0].wasTeleported) {
+                    tank.transform.position = tank.deltas[0].positionTarget;
+                    // TODO: Start animation
+                    tank.deltas.RemoveAt(0);
+                }
+                else
                 {
                     if (tank.transform.position == tank.deltas[0].positionTarget)
                     {

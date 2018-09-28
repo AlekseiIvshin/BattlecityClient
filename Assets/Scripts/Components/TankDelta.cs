@@ -5,7 +5,8 @@ using UnityEngine;
 public class TankDelta {
     public Quaternion rotationTarget;
     public Vector3 positionTarget;
-    public bool isRotaion;
+    public bool isRotaion = false;
+    public bool wasTeleported = false;
 
     public static TankDelta rotateTo(Quaternion rotationTarget)
     {
@@ -39,6 +40,16 @@ public class TankDelta {
         return new TankDelta
         {
             isRotaion = false,
+            positionTarget = positionTarget,
+        };
+    }
+
+    public static TankDelta teleportTo(Vector3 positionTarget)
+    {
+        return new TankDelta
+        {
+            isRotaion = false,
+            wasTeleported = true,
             positionTarget = positionTarget,
         };
     }

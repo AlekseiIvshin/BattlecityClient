@@ -35,6 +35,12 @@ public class BulletControlSystem : IEcsInitSystem, IEcsRunSystem, ObjectDestroyE
                 {
                     if (bullet.transform != null)
                     {
+                        GameObject explosion = Object.Instantiate(
+                            Resources.Load("Effects/WFX_Explosion") as GameObject,
+                            bullet.transform.position + Vector3.up*1.5f,
+                            bullet.transform.rotation
+                        ) as GameObject;
+                        Object.Destroy(explosion, 5f);
                         Object.Destroy(bullet.transform.gameObject);
                     }
                     bullet.transform = null;

@@ -94,13 +94,16 @@ public class MapUtils {
     {
         switch (MapItems.MAP_KEYS[symbol])
         {
-            case MapItems.KEY_BULLET:
+            case MapItems.KEY_BULLET_UP:
                 return MapUtils.DIRECTION_UP;
+            case MapItems.KEY_BULLET_RIGHT:
+                return MapUtils.DIRECTION_RIGHT;
+            case MapItems.KEY_BULLET_DOWN:
+                return MapUtils.DIRECTION_DOWN;
+            case MapItems.KEY_BULLET_LEFT:
+                return MapUtils.DIRECTION_LEFT;
         }
-
-        // TODO: FIX IT: remove default value
-        return MapUtils.DIRECTION_UP;
-        //throw new System.Exception("No direction for '" + symbol + "'");
+        throw new System.Exception("No direction for '" + symbol + "'");
     }
 
     public static bool getCoordinatesWithDelta(int fieldSize, int row, int column, PositionDelta posDelta, out int nextRow, out int nextColumn)

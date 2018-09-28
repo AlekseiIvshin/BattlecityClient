@@ -12,16 +12,16 @@ using System.Threading;
 [EcsInject]
 public class DataSystem : IEcsInitSystem, IEcsRunSystem
 {
-    const string MESSAGE = "{name: 'getScreen', allPlayersScreen: true, gameName:'battlecity'}";
+    const string MESSAGE = "{name: 'getScreen', allPlayersScreen: false, players: ['test@test.com'], gameName:'battlecity'}";
 
 
     public static string getServerAddress()
     {
-        return "ws://" + ClientState.serverAddress + "screen-ws?user=test@test.com&code=20998118591535248716";
+        return "ws://" + ClientState.serverAddress + "/codenjoy-contest/screen-ws?user=test@test.com";
     }
     public static string getKeysAddress()
     {
-        return "http://" + ClientState.serverAddress + "rest/sprites/battlecity";
+        return "http://" + ClientState.serverAddress + "/codenjoy-contest/rest/sprites/battlecity";
     }
 
     EcsFilterSingle<SharedGameState> _gameState = null;
@@ -37,7 +37,7 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
 
     WebSocket webSocket;
 
-    long nextExchange = -1;
+    float nextExchange = -1f;
 
     void IEcsInitSystem.Initialize()
     {
@@ -78,6 +78,9 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
                 }, _stateVersion);
             }
         };
+        webSocket.OnError += (sender, e) => {
+            Debug.Log("Socket connection error: " + e.Message);
+        };
 
         this._monoBehaviour.StartCoroutine(getFieldMapping());
     }
@@ -92,9 +95,10 @@ public class DataSystem : IEcsInitSystem, IEcsRunSystem
 
     void IEcsRunSystem.Run()
     {
-        if (webSocket.IsConnected && nextExchange <= DateTime.Now.Ticks)
+        Debug.Log(Time.realtimeSinceStartup);
+        if (webSocket.IsConnected && nextExchange <= Time.realtimeSinceStartup)
         {
-            nextExchange = DateTime.Now.Ticks + ClientState.tickTime;
+            nextExchange = Time.realtimeSinceStartup + ClientState.tickTime /1000;
             webSocket.Send(MESSAGE);
         }
     }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using Leopotam.Ecs;
+using UnityEngine.UI;
 
 public class TanksManagerDelegate : ItemManagerDelegate<Tank>
 {
@@ -44,6 +45,9 @@ public class TanksManagerDelegate : ItemManagerDelegate<Tank>
         var tank = base.createItem(item);
         tank.direction = MapUtils.getTankDirection(item.symbol);
         tank.name = name;
+        tank.cloud = tank.transform.Find("Canvas");
+        tank.nameCloud = tank.cloud.Find("Text").GetComponent<Text>();
+        tank.nameCloud.text = name;
         return tank;
     }
 

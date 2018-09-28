@@ -3,5 +3,5 @@
 public class MainCamera
 {
     public Transform transform;
-    public Vector3 offset;
+    public Camera camera;
 }

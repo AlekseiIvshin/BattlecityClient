@@ -12,6 +12,7 @@ using System.Threading;
 public class MainCameraSystem : IEcsInitSystem, IEcsRunSystem
 {
     EcsFilterSingle<SharedGameState> _gameState = null;
+    EcsWorld _world;
 
     private static readonly float PanSpeed = 40f;
     private static readonly float ZoomSpeedMouse = 5f;
@@ -35,6 +36,9 @@ public class MainCameraSystem : IEcsInitSystem, IEcsRunSystem
     {
         cameraContainer = GameObject.FindGameObjectWithTag("MainCamera");
         cam = cameraContainer.GetComponentInChildren<Camera>();
+        var camera = EcsFilterSingle<MainCamera>.Create(_world);
+        camera.camera = cameraContainer.GetComponentInChildren<Camera>();
+        camera.transform = cameraContainer.transform;
         zoomScaling = 1;
     }
 

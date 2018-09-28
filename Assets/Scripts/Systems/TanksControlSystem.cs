@@ -5,8 +5,11 @@ using UnityEngine;
 public class TanksControlSystem : IEcsInitSystem, IEcsRunSystem
 {
     EcsFilter<Tank> _tanksFilter = null;
+    EcsFilterSingle<MainCamera> _cameraFilter = null;
 
     const int actionsPerStep = 3;
+
+    MainCamera camera;
 
     void IEcsInitSystem.Initialize()
     {
@@ -21,6 +24,7 @@ public class TanksControlSystem : IEcsInitSystem, IEcsRunSystem
         for (var index = 0; index < _tanksFilter.EntitiesCount; index++)
         {
             var tank = _tanksFilter.Components1[index];
+            tank.cloud.transform.LookAt(_cameraFilter.Data.camera.transform.position);
             if (tank.deltas.Count > 0)
             {
                 if (tank.deltas[0].isRotaion)

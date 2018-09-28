@@ -19,6 +19,10 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
     EcsFilter<Medkit> _medkitFilter = null;
     EcsFilter<AmmoBox> _ammoBoxFilter = null;
     EcsFilter<Hedgehog> _hedgehogFilter = null;
+    EcsFilter<Sand> _sandFilter = null;
+    EcsFilter<Bog> _bogFilter = null;
+    EcsFilter<Moat> _moatFilter = null;
+    EcsFilter<WormHole> _wormHoleFilter = null;
 
     private int _gameState = GAME_WAIT_FOR_DATA;
     private int _fieldSize;
@@ -72,6 +76,34 @@ public class GameSystems : IEcsInitSystem, IEcsRunSystem, GameStateEventManager.
                 new ObstacleManagerDelegate<Hedgehog>(_world, _hedgehogFilter, MapItems.PREFAB_HEDGEHOG),
                 new UpdatesHandler(),
                 MapItems.PREFAB_TO_KEYS[MapItems.PREFAB_HEDGEHOG]
+            )
+        );
+        updatesHandlers.Add(
+            new MapItemProcessor<Sand>(
+                new ObstacleManagerDelegate<Sand>(_world, _sandFilter, MapItems.PREFAB_SAND),
+                new UpdatesHandler(),
+                MapItems.PREFAB_TO_KEYS[MapItems.PREFAB_SAND]
+            )
+        );
+        updatesHandlers.Add(
+            new MapItemProcessor<Bog>(
+                new ObstacleManagerDelegate<Bog>(_world, _bogFilter, MapItems.PREFAB_BOG),
+                new UpdatesHandler(),
+                MapItems.PREFAB_TO_KEYS[MapItems.PREFAB_BOG]
+            )
+        );
+        updatesHandlers.Add(
+            new MapItemProcessor<Moat>(
+                new MoatManagerDelegate(_world, _moatFilter, MapItems.PREFAB_MOAT),
+                new UpdatesHandler(),
+                MapItems.PREFAB_TO_KEYS[MapItems.PREFAB_MOAT]
+            )
+        );
+        updatesHandlers.Add(
+            new MapItemProcessor<WormHole>(
+                new ObstacleManagerDelegate<WormHole>(_world, _wormHoleFilter, MapItems.PREFAB_WORM_HOLE),
+                new UpdatesHandler(),
+                MapItems.PREFAB_TO_KEYS[MapItems.PREFAB_WORM_HOLE]
             )
         );
         _tanksProcessor = 

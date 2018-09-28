@@ -112,7 +112,7 @@ public class TankProcessor : ItemProcessor<Tank>
 
     protected override Quaternion getDirection(char symbol)
     {
-        return MapUtils.getWorlRotation(getLocalDirection(symbol));
+        return MapUtils.getWorldRotation(getLocalDirection(symbol));
     }
 
     protected override Tank createItem(char symbol, int row, int column)

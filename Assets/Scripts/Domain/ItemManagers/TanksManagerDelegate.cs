@@ -32,7 +32,7 @@ public class TanksManagerDelegate : ItemManagerDelegate<Tank>
 
     public override Quaternion getDirection(MapItem item)
     {
-        return MapUtils.getWorlRotation(MapUtils.getTankDirection(item.symbol));
+        return MapUtils.getWorldRotation(MapUtils.getTankDirection(item.symbol));
     }
 
     public override Tank createItem(MapItem item)

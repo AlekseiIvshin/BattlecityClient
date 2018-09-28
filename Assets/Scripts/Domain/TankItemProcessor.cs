@@ -26,7 +26,7 @@ public class TankItemProcessor
 
     protected virtual Quaternion getDirection(char symbol)
     {
-        return MapUtils.getWorlRotation(MapUtils.getTankDirection(symbol));
+        return MapUtils.getWorldRotation(MapUtils.getTankDirection(symbol));
     }
 
     public virtual void initItems(BattlefieldState state)

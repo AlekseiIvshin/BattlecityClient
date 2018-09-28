@@ -62,12 +62,21 @@ public class MapItems
     public const string PREFAB_MEDKIT = "Medkit";
     public const string PREFAB_AMMO_BOX = "AmmoBox";
     public const string PREFAB_HEDGEHOG = "Hedgehog";
+    public const string PREFAB_SAND = "Sand";
+    public const string PREFAB_BOG = "Bog";
+    public const string PREFAB_MOAT = "Moat";
+    public const string PREFAB_WORM_HOLE = "WormHole";
+
 
     public static Dictionary<string, IEnumerable<string>> PREFAB_TO_KEYS = new Dictionary<string, IEnumerable<string>>
     {
         { PREFAB_BATTLE_WALL, new string[] {KEY_BATTLE_WALL} },
         { PREFAB_BULLET, new string[] { KEY_BULLET_UP , KEY_BULLET_DOWN, KEY_BULLET_RIGHT, KEY_BULLET_LEFT} },
         { PREFAB_HEDGEHOG, new string[] {KEY_HEDGEHOG} },
+        { PREFAB_SAND, new string[] {KEY_SAND} },
+        { PREFAB_BOG, new string[] {KEY_BOG} },
+        { PREFAB_MOAT, new string[] {KEY_MOAT_HORIZONTAL, KEY_MOAT_VERTICAL} },
+        { PREFAB_WORM_HOLE, new string[] {KEY_WORM_HOLE} },
         { PREFAB_AMMO_BOX, new string[] {KEY_BONUS_AMMO} },
         { PREFAB_MEDKIT, new string[] {KEY_MEDKIT} },
         {PREFAB_TANK, new string[]{

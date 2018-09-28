@@ -33,7 +33,7 @@ public class MapUtils {
         return new Vector3(row * tileSize, 0, column * tileSize);
     }
 
-    public static Quaternion getWorlRotation(int direction)
+    public static Quaternion getWorldRotation(int direction)
     {
         return Quaternion.Euler(0, getAngle(direction), 0);
     }
@@ -101,6 +101,18 @@ public class MapUtils {
                 return MapUtils.DIRECTION_DOWN;
             case MapItems.KEY_BULLET_LEFT:
                 return MapUtils.DIRECTION_LEFT;
+        }
+        throw new System.Exception("No direction for '" + symbol + "'");
+    }
+
+    public static int getMoatDirection(char symbol)
+    {
+        switch (MapItems.MAP_KEYS[symbol])
+        {
+            case MapItems.KEY_MOAT_HORIZONTAL:
+                return MapUtils.DIRECTION_LEFT;
+            case MapItems.KEY_MOAT_VERTICAL:
+                return MapUtils.DIRECTION_UP;
         }
         throw new System.Exception("No direction for '" + symbol + "'");
     }

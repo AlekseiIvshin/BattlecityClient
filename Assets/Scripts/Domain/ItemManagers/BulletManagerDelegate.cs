@@ -11,7 +11,7 @@ public class BulletManagerDelegate : ItemManagerDelegate<Bullet>
 
     public override Quaternion getDirection(MapItem item)
     {
-        return MapUtils.getWorlRotation(MapUtils.getBulletDirection(item.symbol));
+        return MapUtils.getWorldRotation(MapUtils.getBulletDirection(item.symbol));
     }
 
     public override Bullet createItem(MapItem item)

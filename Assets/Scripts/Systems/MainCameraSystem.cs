@@ -13,7 +13,7 @@ public class MainCameraSystem : IEcsInitSystem, IEcsRunSystem
 {
     EcsFilterSingle<SharedGameState> _gameState = null;
 
-    private static readonly float PanSpeed = 20f;
+    private static readonly float PanSpeed = 40f;
     private static readonly float ZoomSpeedMouse = 5f;
     private static readonly float RotateSpeed = 100f;
 

@@ -47,7 +47,15 @@ public class TanksManagerDelegate : ItemManagerDelegate<Tank>
         tank.name = name;
         tank.cloud = tank.transform.Find("Canvas");
         tank.nameCloud = tank.cloud.Find("Text").GetComponent<Text>();
-        tank.nameCloud.text = name;
+        var etaIndex = name.IndexOf('@');
+        if (etaIndex > 0)
+        {
+            tank.nameCloud.text = name.Substring(0, etaIndex - 1);
+        }
+        else
+        {
+            tank.nameCloud.text = name;
+        }
         return tank;
     }
 
@@ -97,7 +105,8 @@ public class TanksManagerDelegate : ItemManagerDelegate<Tank>
                 tank.column = next.column;
             }
         }
-        tank.deltas.Add(TankDelta.rotateToDirection(MapUtils.getTankDirection(next.symbol)));
+        var directionSymbol = canProcess(next.symbol) ? next.symbol : prev.symbol;
+        tank.deltas.Add(TankDelta.rotateToDirection(MapUtils.getTankDirection(directionSymbol)));
         return true;
     }
 
